@@ -1,0 +1,47 @@
+# Dépendances
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Next.js
+.next/
+out/
+build/
+dist/
+
+# Base de données
+*.db
+*.db-journal
+prisma/dev.db
+prisma/*.db
+
+# Variables d'environnement (IMPORTANT)
+.env
+.env*.local
+.env.production
+.env.development
+
+# Credentials (NE JAMAIS COMMIT)
+credentials/
+*.json
+service-account-*.json
+gmail-credentials.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+logs/
+*.log
+
+# Tests
+coverage/
+.nyc_output/

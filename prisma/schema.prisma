@@ -1,0 +1,56 @@
+// This is your Prisma schema file for Vinted Scraping
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Article {
+  id            String   @id @default(cuid())
+
+  // Identifiants uniques
+  articleUrl    String   @unique
+  vintedId      String   @unique
+
+  // Données scrapées (XPath fournis)
+  nom           String
+  prix          Float
+  taille        String?
+  photoUrl      String?
+
+  // Données supplémentaires
+  marque        String?
+  etat          String?
+  description   String?
+  nombreVues    Int      @default(0)
+  nombreLikes   Int      @default(0)
+
+  // Statut
+  statut        String   @default("en_vente")
+  estActif      Boolean  @default(true)
+
+  // Métadonnées
+  dateAjout     DateTime @default(now())
+  dateMiseAJour DateTime @updatedAt
+  derniereSync  DateTime @default(now())
+
+  @@index([statut])
+  @@index([vintedId])
+}
+
+model ScrapingLog {
+  id                String   @id @default(cuid())
+  dateExecution     DateTime @default(now())
+  statut            String   // "success" | "error" | "partial"
+  articlesNouveaux  Int      @default(0)
+  articlesModifies  Int      @default(0)
+  articlesSupprimes Int      @default(0)
+  dureeSecondes     Int?
+  messageErreur     String?
+
+  @@index([dateExecution])
+}
