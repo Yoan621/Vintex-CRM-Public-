@@ -1,47 +1,123 @@
-# Dépendances
+# =====================================================
+# DÉPENDANCES - À IGNORER
+# =====================================================
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+.pnp
+.pnp.js
 
-# Next.js
+# =====================================================
+# BUILDS & COMPILATIONS - À IGNORER
+# =====================================================
 .next/
 out/
 build/
 dist/
+*.tsbuildinfo
+.cache/
 
-# Base de données
+# =====================================================
+# BASE DE DONNÉES LOCALE - À IGNORER
+# =====================================================
 *.db
 *.db-journal
+*.db-wal
+*.sqlite
+*.sqlite3
 prisma/dev.db
 prisma/*.db
 
-# Variables d'environnement (IMPORTANT)
+# =====================================================
+# ENVIRONNEMENT & SECRETS - À IGNORER (CRITIQUE)
+# =====================================================
 .env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 .env*.local
-.env.production
-.env.development
 
-# Credentials (NE JAMAIS COMMIT)
+# Credentials - À IGNORER (CRITIQUE)
 credentials/
-*.json
+*-credentials.json
 service-account-*.json
 gmail-credentials.json
+*.pem
+*.key
+*.p12
+*.pfx
+.secret
+secrets/
 
-# OS
+# =====================================================
+# OS - À IGNORER
+# =====================================================
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+desktop.ini
 
-# IDE
+# =====================================================
+# IDE & EDITORS - À IGNORER
+# =====================================================
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-*
 
-# Logs
+# =====================================================
+# LOGS - À IGNORER
+# =====================================================
 logs/
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
 
-# Tests
+# =====================================================
+# TESTS & COVERAGE - À IGNORER
+# =====================================================
 coverage/
 .nyc_output/
+.jest/
+*.test.js.snap
+
+# =====================================================
+# DEPLOYMENT - À IGNORER
+# =====================================================
+.vercel
+.netlify
+
+# =====================================================
+# TEMP FILES - À IGNORER
+# =====================================================
+*.tmp
+*.temp
+.cache
+tmp/
+temp/
+
+# =====================================================
+# FICHIERS À GARDER (commentés pour documentation)
+# =====================================================
+# ✅ package.json - ESSENTIEL
+# ✅ package-lock.json - ESSENTIEL
+# ✅ tsconfig.json - ESSENTIEL
+# ✅ next.config.js - ESSENTIEL
+# ✅ tailwind.config.js - ESSENTIEL
+# ✅ prisma/schema.prisma - ESSENTIEL
+# ✅ .env.example - BON À AVOIR (template sans secrets)
+# ✅ README.md - BON À AVOIR
