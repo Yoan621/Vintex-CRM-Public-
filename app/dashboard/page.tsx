@@ -7,7 +7,7 @@ import StatsCard from '@/components/shared/StatsCard'
 import DashboardHeader from '@/components/dashboard/DashboardHeader'
 import { TimePeriod } from '@/components/shared/TimeFilter'
 import { AccountOption } from '@/components/dashboard/AccountSelector'
-import { mockOrders } from '@/data/mockData'
+import { getOrders, getUniqueAccounts } from '@/lib/store/ordersStore'
 import { mockBoosts } from '@/data/boosts'
 import { calculatePeriodStats, calculateBoostPeriodStats, generateChartData } from '@/lib/utils'
 import { DollarSign, TrendingUp, ShoppingCart, Zap, ShoppingBag, Clock } from 'lucide-react'
@@ -15,19 +15,24 @@ import { DollarSign, TrendingUp, ShoppingCart, Zap, ShoppingBag, Clock } from 'l
 /**
  * Page Dashboard - Refonte complète avec charte Vintod
  * Filtres dynamiques + KPI + Graphiques violet/vert
+ * 
+ * ⚠️ Les données proviennent maintenant du store (ordersStore.ts) au lieu de mockData
  */
 export default function DashboardPage() {
   const [timePeriod, setTimePeriod] = useState<TimePeriod>('month')
   const [selectedAccount, setSelectedAccount] = useState<AccountOption>('all')
   const [isLoading, setIsLoading] = useState(false)
 
+  // Récupérer les commandes depuis le store (au lieu de mockData)
+  const allOrders = getOrders()
+
   // Extraire la liste unique des comptes depuis les commandes
-  const uniqueAccounts = Array.from(new Set(mockOrders.map(order => order.vintedAccount).filter(Boolean))) as string[]
+  const uniqueAccounts = getUniqueAccounts()
 
   // Filtrer les commandes selon le compte sélectionné
   const filteredOrdersByAccount = selectedAccount === 'all'
-    ? mockOrders
-    : mockOrders.filter(order => order.vintedAccount === selectedAccount)
+    ? allOrders
+    : allOrders.filter(order => order.vintedAccount === selectedAccount)
 
   // Calcul des statistiques et KPIs selon la période sélectionnée
   const stats = calculatePeriodStats(filteredOrdersByAccount, timePeriod)

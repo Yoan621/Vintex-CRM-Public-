@@ -539,35 +539,5 @@ export const mockOrders: Order[] = [
  * Données pour le graphique de CA
  */
 export const mockChartData: ChartData[] = [
-  // Derniers 30 jours
-  { date: '01/12', revenue: 154, profit: 64 },
-  { date: '02/12', revenue: 65, profit: 35 },
-  { date: '03/12', revenue: 0, profit: 0 },
-  { date: '04/12', revenue: 0, profit: 0 },
-  { date: '05/12', revenue: 70, profit: 35 },
-  { date: '06/12', revenue: 0, profit: 0 },
-  { date: '07/12', revenue: 0, profit: 0 },
-  { date: '08/12', revenue: 85, profit: 45 },
-  { date: '09/12', revenue: 0, profit: 0 },
-  { date: '10/12', revenue: 45, profit: 25 },
-  { date: '11/12', revenue: 0, profit: 0 },
-  { date: '12/12', revenue: 75, profit: 37 },
-  { date: '13/12', revenue: 0, profit: 0 },
-  { date: '14/12', revenue: 0, profit: 0 },
-  { date: '15/12', revenue: 150, profit: 70 },
-  { date: '16/12', revenue: 0, profit: 0 },
-  { date: '17/12', revenue: 0, profit: 0 },
-  { date: '18/12', revenue: 0, profit: 0 },
-  { date: '19/12', revenue: 0, profit: 0 },
-  { date: '20/12', revenue: 0, profit: 0 },
-  { date: '21/12', revenue: 0, profit: 0 },
-  { date: '22/12', revenue: 0, profit: 0 },
-  { date: '23/12', revenue: 0, profit: 0 },
-  { date: '24/12', revenue: 0, profit: 0 },
-  { date: '25/12', revenue: 0, profit: 0 },
-  { date: '26/12', revenue: 0, profit: 0 },
-  { date: '27/12', revenue: 0, profit: 0 },
-  { date: '28/12', revenue: 0, profit: 0 },
-  { date: '29/12', revenue: 0, profit: 0 },
-  { date: '30/12', revenue: 0, profit: 0 },
+
 ]
