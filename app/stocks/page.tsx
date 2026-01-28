@@ -5,7 +5,6 @@ import { Plus, Package, DollarSign, TrendingUp, Search, Download, RefreshCw } fr
 import ArticleCard from '@/components/stocks/ArticleCard'
 import ArticleModal, { type ArticleFormData } from '@/components/stocks/ArticleModal'
 import StatsCard from '@/components/shared/StatsCard'
-import { mockArticles } from '@/data/articles'
 import type { Article, ArticleStatut } from '@/lib/types'
 import { calculerStatsStock, exporterCSV } from '@/lib/calculations'
 import { formatCurrency } from '@/lib/utils'
@@ -14,7 +13,7 @@ import { formatCurrency } from '@/lib/utils'
  * Page de gestion des stocks (inventaire)
  */
 export default function StocksPage() {
-  const [articles, setArticles] = useState<Article[]>(mockArticles)
+  const [articles, setArticles] = useState<Article[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null)
   const [searchTerm, setSearchTerm] = useState('')

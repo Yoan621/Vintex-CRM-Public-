@@ -6,7 +6,6 @@ import BoostTable from '@/components/boosts/BoostTable'
 import BoostFilters from '@/components/boosts/BoostFilters'
 import BoostModal, { type BoostFormData } from '@/components/boosts/BoostModal'
 import StatsCard from '@/components/shared/StatsCard'
-import { mockBoosts } from '@/data/boosts'
 import type { Boost, BoostStatus, BoostPeriodFilter } from '@/lib/types'
 import {
   formatCurrency,
@@ -18,7 +17,7 @@ import {
  * Page de gestion des boosts Vinted
  */
 export default function BoostsPage() {
-  const [boosts, setBoosts] = useState<Boost[]>(mockBoosts)
+  const [boosts, setBoosts] = useState<Boost[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState<BoostStatus | 'tous'>('tous')

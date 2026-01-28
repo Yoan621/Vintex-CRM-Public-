@@ -1,10 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { mockAchats, filterAchatsByPeriod, calculateStats } from '@/lib/mock-data/achats'
-import { getComptesUsernames } from '@/lib/mock-data/comptes-vinted'
-import { addMultipleArticlesFromAchats } from '@/lib/mock-data/stock'
-import { Achat, AchatFormData, Plateforme, StatutAchat } from '@/types/achat'
+import { Achat, AchatFormData, AchatStats, Plateforme, StatutAchat } from '@/types/achat'
 import StatsCards from './components/StatsCards'
 import SearchBar from './components/SearchBar'
 import AchatsTable from './components/AchatsTable'
@@ -22,7 +19,7 @@ import { AccountOption } from '@/components/dashboard/AccountSelector'
  */
 export default function AchatsPage() {
   // État des achats
-  const [achats, setAchats] = useState<Achat[]>(mockAchats)
+  const [achats, setAchats] = useState<Achat[]>([])
 
   // États des filtres temporels et compte
   const [timePeriod, setTimePeriod] = useState<TimePeriod>('month')
@@ -41,7 +38,7 @@ export default function AchatsPage() {
   const [selectedAchat, setSelectedAchat] = useState<Achat | null>(null)
 
   // Récupérer la liste des comptes Vinted depuis le système de gestion des comptes
-  const uniqueAccounts = getComptesUsernames()
+  const uniqueAccounts: string[] = []
 
   // Filtrer les achats selon le compte sélectionné
   const achatsByAccount = selectedAccount === 'all'
@@ -50,12 +47,30 @@ export default function AchatsPage() {
 
   // Filtrage par période temporelle
   const achatsByPeriod = useMemo(() => {
-    return filterAchatsByPeriod(achatsByAccount, timePeriod)
+    // Filtrer par période (de base, on prend tous les achats)
+    return achatsByAccount
   }, [achatsByAccount, timePeriod])
 
   // Calcul des statistiques à partir des achats filtrés par période
   const stats = useMemo(() => {
-    return calculateStats(achatsByPeriod)
+    const stats: AchatStats = {
+      argentDepense: achatsByPeriod.reduce((sum, a) => sum + a.coutTotal, 0),
+      evolutionDepenses: 0, // À calculer avec les données du mois précédent
+      nombreArticles: achatsByPeriod.length,
+      nouvelleArticles: achatsByPeriod.filter(a => a.statut === 'en_attente').length,
+      margeEstimee: achatsByPeriod.reduce((sum, a) => sum + (a.margeEstimee || 0), 0),
+      roi: achatsByPeriod.length > 0 
+        ? ((achatsByPeriod.reduce((sum, a) => sum + (a.margeEstimee || 0), 0) / achatsByPeriod.reduce((sum, a) => sum + a.coutTotal, 0)) * 100)
+        : 0,
+      enAttente: achatsByPeriod.filter(a => a.statut === 'en_attente').length,
+      expedie: achatsByPeriod.filter(a => a.statut === 'expedie').length,
+      recu: achatsByPeriod.filter(a => a.statut === 'recu').length,
+      enStock: achatsByPeriod.filter(a => a.statut === 'en_stock').length,
+      revendu: achatsByPeriod.filter(a => a.statut === 'revendu').length,
+      retourne: achatsByPeriod.filter(a => a.statut === 'retourne').length,
+      litige: achatsByPeriod.filter(a => a.statut === 'litige').length,
+    }
+    return stats
   }, [achatsByPeriod])
 
   // Filtrage des achats (recherche, statut, plateforme)

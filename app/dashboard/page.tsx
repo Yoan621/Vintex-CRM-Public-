@@ -8,7 +8,6 @@ import DashboardHeader from '@/components/dashboard/DashboardHeader'
 import { TimePeriod } from '@/components/shared/TimeFilter'
 import { AccountOption } from '@/components/dashboard/AccountSelector'
 import { getOrders, getUniqueAccounts } from '@/lib/store/ordersStore'
-import { mockBoosts } from '@/data/boosts'
 import { calculatePeriodStats, calculateBoostPeriodStats, generateChartData } from '@/lib/utils'
 import { DollarSign, TrendingUp, ShoppingCart, Zap, ShoppingBag, Clock } from 'lucide-react'
 
@@ -36,7 +35,7 @@ export default function DashboardPage() {
 
   // Calcul des statistiques et KPIs selon la période sélectionnée
   const stats = calculatePeriodStats(filteredOrdersByAccount, timePeriod)
-  const boostStats = calculateBoostPeriodStats(mockBoosts, timePeriod)
+  const boostStats = calculateBoostPeriodStats([], timePeriod)
 
   // Calcul des bénéfices nets (après déduction des boosts)
   const netProfit = stats.currentMonth.profit - boostStats.currentMonth.totalSpent
