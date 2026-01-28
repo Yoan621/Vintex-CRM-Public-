@@ -3,8 +3,7 @@
 import { useState, useMemo } from 'react'
 import SalesTable from '@/components/ventes/SalesTable'
 import StatsCard from '@/components/shared/StatsCard'
-import { mockOrders, filterOrdersByPeriod } from '@/data/mockData'
-import { getComptesUsernames } from '@/lib/mock-data/comptes-vinted'
+import { getOrders, addOrder, getUniqueAccounts } from '@/lib/store/ordersStore'
 import { calculateProfit } from '@/lib/utils'
 import { DollarSign, TrendingUp, Package, Clock } from 'lucide-react'
 import DashboardHeader from '@/components/dashboard/DashboardHeader'
@@ -16,6 +15,8 @@ import type { Order } from '@/lib/types'
 /**
  * Page Mes Ventes - Liste complète de toutes les ventes
  * Affiche un tableau détaillé avec recherche, tri et pagination
+ * 
+ * ⚠️ Les données proviennent maintenant du store (ordersStore.ts) au lieu de mockData
  */
 export default function VentesPage() {
   // États des filtres temporels et compte
@@ -24,10 +25,13 @@ export default function VentesPage() {
 
   // État pour la modale d'ajout
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
-  const [orders, setOrders] = useState<Order[]>(mockOrders)
+  const [refreshKey, setRefreshKey] = useState(0)
 
-  // Récupérer la liste des comptes Vinted depuis le système de gestion des comptes
-  const uniqueAccounts = getComptesUsernames()
+  // Récupérer les commandes depuis le store (au lieu de mockData)
+  const orders = getOrders()
+
+  // Récupérer la liste des comptes Vinted depuis le store
+  const uniqueAccounts = getUniqueAccounts()
 
   // Filtrer les commandes selon le compte sélectionné
   const filteredOrdersByAccount = selectedAccount === 'all'
@@ -36,25 +40,45 @@ export default function VentesPage() {
 
   // Filtrage par période temporelle
   const ordersByPeriod = useMemo(() => {
-    return filterOrdersByPeriod(filteredOrdersByAccount, timePeriod)
+    const now = new Date()
+    const startOfPeriod = new Date()
+
+    switch (timePeriod) {
+      case 'day':
+        startOfPeriod.setHours(0, 0, 0, 0)
+        break
+      case 'week':
+        startOfPeriod.setDate(now.getDate() - 7)
+        break
+      case 'month':
+        startOfPeriod.setDate(now.getDate() - 30)
+        break
+      case 'year':
+        startOfPeriod.setDate(now.getDate() - 365)
+        break
+    }
+
+    return filteredOrdersByAccount.filter(order => {
+      const orderDate = new Date(order.saleDate)
+      return orderDate >= startOfPeriod
+    })
   }, [filteredOrdersByAccount, timePeriod])
 
   // Calcul des statistiques à partir des ventes filtrées par période
   const totalRevenue = ordersByPeriod.reduce((sum, order) => sum + order.salePrice, 0)
   const totalProfit = ordersByPeriod.reduce((sum, order) => sum + calculateProfit(order), 0)
   const totalOrders = ordersByPeriod.length
-  const pendingOrders = ordersByPeriod.filter(o => o.status === 'en_cours').length
+  const pendingOrders = ordersByPeriod.filter(o => o.status === 'non_traite').length
 
   // Handler: Ajouter une vente
   const handleAddSale = (data: SaleFormData) => {
-    const newOrder: Order = {
-      id: Math.random().toString(36).substring(2, 11),
+    const newOrder = addOrder({
       transactionNumber: data.transactionNumber,
       articleName: data.articleName,
       brandName: data.brandName,
       vintedAccount: data.vintedAccount,
       status: data.status,
-      purchaseDate: new Date(data.saleDate), // Utiliser la date de vente comme date d'achat pour l'instant
+      purchaseDate: new Date(data.saleDate),
       saleDate: new Date(data.saleDate),
       purchasePrice: data.purchasePrice,
       salePrice: data.salePrice,
@@ -62,10 +86,11 @@ export default function VentesPage() {
       carrier: data.carrier,
       customerName: data.customerName,
       articleImage: data.articleImage ? URL.createObjectURL(data.articleImage) : undefined,
-    }
+    })
 
-    setOrders([newOrder, ...orders])
-    console.log('Vente ajoutée (mode démo):', newOrder)
+    // Forcer le re-render en mettant à jour la clé
+    setRefreshKey(prev => prev + 1)
+    console.log('✅ Vente ajoutée au store:', newOrder)
   }
 
   return (
