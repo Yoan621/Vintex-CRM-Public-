@@ -30,7 +30,7 @@ export default function Sidebar() {
 
   const isActive = (href: string) => pathname === href
 
-  if (!isSidebarOpen) return null
+  if (!isSidebarOpen || pathname === '/') return null
 
   return (
     <aside className="w-60 bg-black fixed h-screen transition-transform duration-300">

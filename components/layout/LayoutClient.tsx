@@ -1,5 +1,6 @@
 'use client'
 
+import { usePathname } from 'next/navigation'
 import { SidebarProvider, useSidebar } from '@/contexts/SidebarContext'
 import Sidebar from './Sidebar'
 
@@ -9,16 +10,15 @@ interface LayoutClientProps {
 
 function LayoutContent({ children }: LayoutClientProps) {
   const { isSidebarOpen } = useSidebar()
+  const pathname = usePathname()
+  const isLanding = pathname === '/'
 
   return (
     <div className="flex min-h-screen">
-      {/* Sidebar avec état conditionnel */}
       <Sidebar />
-
-      {/* Contenu principal avec margin conditionnel */}
       <main
         className={`flex-1 bg-[#1a1f23] min-h-screen transition-all duration-300 ${
-          isSidebarOpen ? 'ml-60' : 'ml-0'
+          isSidebarOpen && !isLanding ? 'ml-60' : 'ml-0'
         }`}
       >
         {children}
