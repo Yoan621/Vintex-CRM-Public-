@@ -155,16 +155,16 @@ export default function StocksPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen">
+      <div className="max-w-7xl mx-auto px-6 lg:px-10 py-10">
         {/* En-tête */}
-        <div className="mb-8">
+        <div className="mb-10">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              <h1 className="text-4xl font-heading text-gray-900 mb-3">
                 Gestion des Stocks
               </h1>
-              <p className="text-gray-600">
+              <p className="text-grayMedium text-lg">
                 Gérez l'inventaire complet de votre dressing
               </p>
             </div>

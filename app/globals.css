@@ -3,25 +3,72 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  --background: #1a1f23;
+  --foreground: #E9E9E9;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Nouvelle charte graphique */
+  --primary: #003CF3;
+  --secondary: #E9E9E9;
+  --dark: #0E0E0E;
+  --bg-dark: #1a1f23;
+
+  /* Ombres */
+  --shadow-soft: 0 2px 8px rgba(0, 60, 243, 0.08);
+  --shadow-medium: 0 4px 16px rgba(0, 60, 243, 0.12);
+  --shadow-large: 0 8px 32px rgba(0, 60, 243, 0.16);
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-inter-tight), system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  /* Dégradés personnalisés */
+  .bg-gradient-blue {
+    background: linear-gradient(135deg, #0066FF 0%, #00D9FF 100%);
+  }
+
+  .bg-gradient-green {
+    background: linear-gradient(135deg, #00D98E 0%, #00D9FF 100%);
+  }
+
+  .bg-gradient-violet {
+    background: linear-gradient(135deg, #8B3DFF 0%, #0066FF 100%);
+  }
+
+  /* Ombres douces premium */
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+
+  .shadow-soft-md {
+    box-shadow: var(--shadow-medium);
+  }
+
+  .shadow-soft-lg {
+    box-shadow: var(--shadow-large);
+  }
+
+  /* Text gradient pour titres */
+  .text-gradient-primary {
+    background: linear-gradient(135deg, #0050FF 0%, #3FA8FF 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-secondary {
+    background: linear-gradient(135deg, #2EE7D8 0%, #3FEFFF 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 }

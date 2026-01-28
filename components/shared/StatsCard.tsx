@@ -4,7 +4,7 @@ interface StatsCardProps {
   label: string
   value: string | number
   icon: LucideIcon
-  iconColor: 'violet' | 'blue' | 'green' | 'yellow' | 'indigo' | 'pink' | 'orange' | 'teal'
+  iconColor?: 'primary' | 'secondary' | 'success' | 'warning' | 'info'
   trend?: {
     value: number
     label: string
@@ -14,100 +14,71 @@ interface StatsCardProps {
 }
 
 /**
- * Carte de statistique moderne avec icône colorée et indicateur de variation
- * Suit la nouvelle charte graphique Vintex
+ * Carte de statistique premium avec la nouvelle charte graphique Vintex
  */
 export default function StatsCard({
   label,
   value,
   icon: Icon,
-  iconColor,
+  iconColor = 'primary',
   trend,
   subtitle
 }: StatsCardProps) {
-  // Configuration des couleurs par type
-  const colorConfig = {
-    violet: {
-      bg: 'bg-violet-100',
-      text: 'text-violet-600',
-      iconBg: 'bg-violet-100'
-    },
-    blue: {
-      bg: 'bg-blue-100',
-      text: 'text-blue-600',
-      iconBg: 'bg-blue-100'
-    },
-    green: {
-      bg: 'bg-green-100',
-      text: 'text-green-600',
-      iconBg: 'bg-green-100'
-    },
-    yellow: {
-      bg: 'bg-yellow-100',
-      text: 'text-yellow-600',
-      iconBg: 'bg-yellow-100'
-    },
-    indigo: {
-      bg: 'bg-indigo-100',
-      text: 'text-indigo-600',
-      iconBg: 'bg-indigo-100'
-    },
-    pink: {
-      bg: 'bg-pink-100',
-      text: 'text-pink-600',
-      iconBg: 'bg-pink-100'
-    },
-    orange: {
-      bg: 'bg-orange-100',
-      text: 'text-orange-600',
-      iconBg: 'bg-orange-100'
-    },
-    teal: {
-      bg: 'bg-teal-100',
-      text: 'text-teal-600',
-      iconBg: 'bg-teal-100'
-    }
+  // Configuration des couleurs selon le type d'icône
+  const iconStyles = {
+    primary: 'bg-[#003CF3] shadow-[0_4px_16px_rgba(0,60,243,0.4)]',
+    secondary: 'bg-[#E9E9E9] shadow-[0_4px_16px_rgba(233,233,233,0.2)]',
+    success: 'bg-[#00D98E] shadow-[0_4px_16px_rgba(0,217,142,0.4)]',
+    warning: 'bg-[#FF9500] shadow-[0_4px_16px_rgba(255,149,0,0.4)]',
+    info: 'bg-[#0066FF] shadow-[0_4px_16px_rgba(0,102,255,0.4)]'
   }
 
-  const colors = colorConfig[iconColor]
-
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-all">
-      {/* Icône avec fond coloré */}
-      <div className="flex items-center justify-between mb-4">
-        <div className={`p-3 ${colors.iconBg} rounded-lg`}>
-          <Icon className={`w-6 h-6 ${colors.text}`} />
+    <div className="bg-[#0E0E0E] rounded-xl border border-[#1A1A1A] hover:border-[#003CF3]/40 hover:-translate-y-0.5 transition-all duration-300 p-6">
+      <div className="flex items-start gap-4">
+        {/* Icône à gauche avec couleur dynamique */}
+        <div className={`p-2.5 rounded-full flex-shrink-0 ${iconStyles[iconColor]}`}>
+          <Icon className="w-5 h-5 text-white" />
+        </div>
+
+        {/* Contenu à droite */}
+        <div className="flex-1 min-w-0">
+          {/* Label */}
+          <p className="text-[15px] font-medium text-secondary/60 mb-2 tracking-tight">
+            {label}
+          </p>
+
+          {/* Valeur principale avec couleur conditionnelle */}
+          <p className={`text-[32px] font-bold mb-3 leading-[1.2] ${
+            trend
+              ? trend.isPositive !== false
+                ? 'text-[#00D98E]'
+                : 'text-red-500'
+              : 'text-secondary'
+          }`}>
+            {value}
+          </p>
+
+          {/* Indicateur de variation ou sous-titre */}
+          {trend ? (
+            <div className="flex items-center gap-1.5 text-[13px]">
+              {trend.isPositive !== false ? (
+                <TrendingUp className="w-4 h-4 text-[#00D98E] flex-shrink-0" />
+              ) : (
+                <TrendingDown className="w-4 h-4 text-red-500 flex-shrink-0" />
+              )}
+              <span className={`font-semibold ${trend.isPositive !== false ? 'text-[#00D98E]' : 'text-red-500'}`}>
+                {trend.value > 0 ? '+' : ''}{trend.value.toFixed(1)}%
+              </span>
+              <span className="text-secondary/40 text-[12px]">{trend.label}</span>
+            </div>
+          ) : subtitle ? (
+            <p className="text-[11px] text-secondary/40">
+              {subtitle}
+            </p>
+          ) : null}
         </div>
       </div>
-
-      {/* Label */}
-      <p className="text-sm font-medium text-gray-600 mb-1">
-        {label}
-      </p>
-
-      {/* Valeur principale */}
-      <p className="text-2xl font-bold text-gray-900 mb-2">
-        {value}
-      </p>
-
-      {/* Indicateur de variation ou sous-titre */}
-      {trend ? (
-        <div className="flex items-center gap-1 text-sm">
-          {trend.isPositive !== false ? (
-            <TrendingUp className="w-4 h-4 text-green-600" />
-          ) : (
-            <TrendingDown className="w-4 h-4 text-red-600" />
-          )}
-          <span className={`font-medium ${trend.isPositive !== false ? 'text-green-600' : 'text-red-600'}`}>
-            {trend.value > 0 ? '+' : ''}{trend.value}%
-          </span>
-          <span className="text-gray-500">{trend.label}</span>
-        </div>
-      ) : subtitle ? (
-        <p className="text-sm text-gray-500">
-          {subtitle}
-        </p>
-      ) : null}
     </div>
   )
 }

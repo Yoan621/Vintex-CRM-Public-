@@ -51,24 +51,52 @@ export function calculatePercentageChange(current: number, previous: number): nu
 }
 
 /**
- * Calcule les statistiques mensuelles à partir des commandes
+ * Calcule les statistiques pour une période donnée
  */
-export function calculateMonthlyStats(orders: Order[]): MonthlyStats {
+export function calculatePeriodStats(orders: Order[], period: 'day' | 'week' | 'month' | 'year'): MonthlyStats {
   const now = new Date()
-  const currentMonth = now.getMonth()
-  const currentYear = now.getFullYear()
 
-  const currentMonthOrders = orders.filter(order => {
+  const getDaysAgo = (days: number): Date => {
+    const date = new Date()
+    date.setDate(date.getDate() - days)
+    return date
+  }
+
+  let currentPeriodStart: Date
+  let previousPeriodStart: Date
+  let previousPeriodEnd: Date
+
+  switch (period) {
+    case 'day':
+      currentPeriodStart = getDaysAgo(1)
+      previousPeriodStart = getDaysAgo(2)
+      previousPeriodEnd = getDaysAgo(1)
+      break
+    case 'week':
+      currentPeriodStart = getDaysAgo(7)
+      previousPeriodStart = getDaysAgo(14)
+      previousPeriodEnd = getDaysAgo(7)
+      break
+    case 'month':
+      currentPeriodStart = getDaysAgo(30)
+      previousPeriodStart = getDaysAgo(60)
+      previousPeriodEnd = getDaysAgo(30)
+      break
+    case 'year':
+      currentPeriodStart = getDaysAgo(365)
+      previousPeriodStart = getDaysAgo(730)
+      previousPeriodEnd = getDaysAgo(365)
+      break
+  }
+
+  const currentPeriodOrders = orders.filter(order => {
     const orderDate = new Date(order.saleDate)
-    return orderDate.getMonth() === currentMonth && orderDate.getFullYear() === currentYear
+    return orderDate >= currentPeriodStart && orderDate <= now
   })
 
-  const previousMonth = currentMonth === 0 ? 11 : currentMonth - 1
-  const previousYear = currentMonth === 0 ? currentYear - 1 : currentYear
-
-  const previousMonthOrders = orders.filter(order => {
+  const previousPeriodOrders = orders.filter(order => {
     const orderDate = new Date(order.saleDate)
-    return orderDate.getMonth() === previousMonth && orderDate.getFullYear() === previousYear
+    return orderDate >= previousPeriodStart && orderDate < previousPeriodEnd
   })
 
   const calculateStats = (ordersList: Order[]) => {
@@ -82,9 +110,16 @@ export function calculateMonthlyStats(orders: Order[]): MonthlyStats {
   }
 
   return {
-    currentMonth: calculateStats(currentMonthOrders),
-    previousMonth: calculateStats(previousMonthOrders),
+    currentMonth: calculateStats(currentPeriodOrders),
+    previousMonth: calculateStats(previousPeriodOrders),
   }
+}
+
+/**
+ * Calcule les statistiques mensuelles à partir des commandes
+ */
+export function calculateMonthlyStats(orders: Order[]): MonthlyStats {
+  return calculatePeriodStats(orders, 'month')
 }
 
 /**
@@ -130,18 +165,22 @@ export function generateKPIs(stats: MonthlyStats): KPI[] {
 }
 
 /**
- * Obtient la couleur du badge selon le statut
+ * Obtient la couleur du badge selon le statut (pour les pages hors Dashboard)
  */
 export function getStatusColor(status: Order['status']): string {
   switch (status) {
+    case 'non_traite':
+      return 'bg-gray-500/10 text-gray-500 border border-gray-500/20'
     case 'validée':
-      return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+      return 'bg-green-500/10 text-green-500 border border-green-500/20'
     case 'en_cours':
-      return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
+      return 'bg-primary/10 text-primary border border-primary/20'
+    case 'litige':
+      return 'bg-orange-500/10 text-orange-500 border border-orange-500/20'
     case 'annulée':
-      return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+      return 'bg-red-500/10 text-red-500 border border-red-500/20'
     default:
-      return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300'
+      return 'bg-secondary/10 text-secondary border border-secondary/20'
   }
 }
 
@@ -150,14 +189,39 @@ export function getStatusColor(status: Order['status']): string {
  */
 export function getStatusLabel(status: Order['status']): string {
   switch (status) {
+    case 'non_traite':
+      return 'Non traité'
     case 'validée':
       return 'Validée'
     case 'en_cours':
       return 'En cours'
+    case 'litige':
+      return 'Litige'
     case 'annulée':
       return 'Annulée'
     default:
       return status
+  }
+}
+
+/**
+ * Obtient le libellé formaté du transporteur
+ */
+export function getCarrierLabel(carrier?: string): string {
+  if (!carrier) return '-'
+  switch (carrier) {
+    case 'mondial_relay':
+      return 'Mondial Relay'
+    case 'vinted_go':
+      return 'Vinted Go'
+    case 'chronopost':
+      return 'Chronopost'
+    case 'colissimo':
+      return 'Colissimo'
+    case 'autre':
+      return 'Autre'
+    default:
+      return carrier
   }
 }
 
@@ -194,24 +258,52 @@ export function getBoostStatusLabel(status: BoostStatus): string {
 }
 
 /**
- * Calcule les statistiques mensuelles des boosts
+ * Calcule les statistiques des boosts pour une période donnée
  */
-export function calculateBoostMonthlyStats(boosts: Boost[]): BoostMonthlyStats {
+export function calculateBoostPeriodStats(boosts: Boost[], period: 'day' | 'week' | 'month' | 'year'): BoostMonthlyStats {
   const now = new Date()
-  const currentMonth = now.getMonth()
-  const currentYear = now.getFullYear()
 
-  const currentMonthBoosts = boosts.filter(boost => {
+  const getDaysAgo = (days: number): Date => {
+    const date = new Date()
+    date.setDate(date.getDate() - days)
+    return date
+  }
+
+  let currentPeriodStart: Date
+  let previousPeriodStart: Date
+  let previousPeriodEnd: Date
+
+  switch (period) {
+    case 'day':
+      currentPeriodStart = getDaysAgo(1)
+      previousPeriodStart = getDaysAgo(2)
+      previousPeriodEnd = getDaysAgo(1)
+      break
+    case 'week':
+      currentPeriodStart = getDaysAgo(7)
+      previousPeriodStart = getDaysAgo(14)
+      previousPeriodEnd = getDaysAgo(7)
+      break
+    case 'month':
+      currentPeriodStart = getDaysAgo(30)
+      previousPeriodStart = getDaysAgo(60)
+      previousPeriodEnd = getDaysAgo(30)
+      break
+    case 'year':
+      currentPeriodStart = getDaysAgo(365)
+      previousPeriodStart = getDaysAgo(730)
+      previousPeriodEnd = getDaysAgo(365)
+      break
+  }
+
+  const currentPeriodBoosts = boosts.filter(boost => {
     const boostDate = new Date(boost.date)
-    return boostDate.getMonth() === currentMonth && boostDate.getFullYear() === currentYear
+    return boostDate >= currentPeriodStart && boostDate <= now
   })
 
-  const previousMonth = currentMonth === 0 ? 11 : currentMonth - 1
-  const previousYear = currentMonth === 0 ? currentYear - 1 : currentYear
-
-  const previousMonthBoosts = boosts.filter(boost => {
+  const previousPeriodBoosts = boosts.filter(boost => {
     const boostDate = new Date(boost.date)
-    return boostDate.getMonth() === previousMonth && boostDate.getFullYear() === previousYear
+    return boostDate >= previousPeriodStart && boostDate < previousPeriodEnd
   })
 
   const calculateStats = (boostsList: Boost[]) => {
@@ -225,9 +317,16 @@ export function calculateBoostMonthlyStats(boosts: Boost[]): BoostMonthlyStats {
   }
 
   return {
-    currentMonth: calculateStats(currentMonthBoosts),
-    previousMonth: calculateStats(previousMonthBoosts),
+    currentMonth: calculateStats(currentPeriodBoosts),
+    previousMonth: calculateStats(previousPeriodBoosts),
   }
+}
+
+/**
+ * Calcule les statistiques mensuelles des boosts
+ */
+export function calculateBoostMonthlyStats(boosts: Boost[]): BoostMonthlyStats {
+  return calculateBoostPeriodStats(boosts, 'month')
 }
 
 /**
@@ -241,4 +340,100 @@ export function isBoostExpiringSoon(boost: Boost): boolean {
   const hoursUntilExpiration = (expiration.getTime() - now.getTime()) / (1000 * 60 * 60)
 
   return hoursUntilExpiration <= 24 && hoursUntilExpiration > 0
+}
+
+/**
+ * Génère les données de graphique filtrées selon la période
+ */
+export function generateChartData(orders: Order[], period: 'day' | 'week' | 'month' | 'year') {
+  const getDaysAgo = (days: number): Date => {
+    const date = new Date()
+    date.setDate(date.getDate() - days)
+    return date
+  }
+
+  const periodDays = period === 'day' ? 1 : period === 'week' ? 7 : period === 'month' ? 30 : 365
+  const startDate = getDaysAgo(periodDays)
+
+  // Filtrer les commandes de la période
+  const periodOrders = orders.filter(order => {
+    const orderDate = new Date(order.saleDate)
+    return orderDate >= startDate
+  })
+
+  // Grouper par date
+  const dataByDate = new Map<string, { revenue: number; profit: number }>()
+
+  // Initialiser toutes les dates de la période
+  for (let i = 0; i < periodDays; i++) {
+    const date = getDaysAgo(periodDays - i - 1)
+    const dateKey = format(date, 'dd/MM', { locale: fr })
+    dataByDate.set(dateKey, { revenue: 0, profit: 0 })
+  }
+
+  // Remplir avec les vraies données
+  periodOrders.forEach(order => {
+    const dateKey = format(new Date(order.saleDate), 'dd/MM', { locale: fr })
+    const existing = dataByDate.get(dateKey) || { revenue: 0, profit: 0 }
+    const profit = order.salePrice - order.purchasePrice
+    dataByDate.set(dateKey, {
+      revenue: existing.revenue + order.salePrice,
+      profit: existing.profit + profit
+    })
+  })
+
+  // Convertir en array
+  return Array.from(dataByDate.entries()).map(([date, data]) => ({
+    date,
+    revenue: data.revenue,
+    profit: data.profit
+  }))
+}
+
+/**
+ * Vérifie si une commande validée doit être archivée (plus de 48h)
+ */
+export function shouldBeArchived(order: Order): boolean {
+  if (order.status !== 'validée' || order.archived) return false
+  if (!order.validationDate) return false
+
+  const now = new Date()
+  const validationDate = new Date(order.validationDate)
+  const hoursSinceValidation = (now.getTime() - validationDate.getTime()) / (1000 * 60 * 60)
+
+  return hoursSinceValidation >= 48
+}
+
+/**
+ * Archive automatiquement les commandes validées de plus de 48h
+ */
+export function autoArchiveOrders(orders: Order[]): Order[] {
+  return orders.map(order => {
+    if (shouldBeArchived(order)) {
+      return {
+        ...order,
+        archived: true,
+        archivedDate: order.archivedDate || new Date()
+      }
+    }
+    return order
+  })
+}
+
+/**
+ * Calcule le temps restant avant archivage automatique
+ */
+export function getTimeUntilArchive(order: Order): string | null {
+  if (order.status !== 'validée' || order.archived || !order.validationDate) return null
+
+  const now = new Date()
+  const validationDate = new Date(order.validationDate)
+  const archiveDate = new Date(validationDate.getTime() + (48 * 60 * 60 * 1000))
+  const timeRemaining = archiveDate.getTime() - now.getTime()
+  const hoursRemaining = Math.floor(timeRemaining / (1000 * 60 * 60))
+
+  if (hoursRemaining <= 0) return '⏰ Archivage imminent'
+  if (hoursRemaining < 24) return `⏱️ ${hoursRemaining}h restantes`
+  const daysRemaining = Math.floor(hoursRemaining / 24)
+  return `📅 ${daysRemaining}j restant${daysRemaining > 1 ? 's' : ''}`
 }

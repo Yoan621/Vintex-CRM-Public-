@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import {
   LineChart,
   Line,
@@ -11,7 +10,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts'
-import type { ChartPeriod, ChartData } from '@/lib/types'
+import type { ChartData } from '@/lib/types'
 import { formatCurrency } from '@/lib/utils'
 
 interface SalesChartProps {
@@ -19,31 +18,23 @@ interface SalesChartProps {
 }
 
 /**
- * Composant de graphique des ventes avec filtres de période
+ * Composant de graphique des ventes
  */
 export default function SalesChart({ data }: SalesChartProps) {
-  const [period, setPeriod] = useState<ChartPeriod>('month')
-
-  const periods: { value: ChartPeriod; label: string }[] = [
-    { value: 'day', label: 'Jour' },
-    { value: 'week', label: 'Semaine' },
-    { value: 'month', label: 'Mois' },
-    { value: 'year', label: 'Année' },
-  ]
 
   // Tooltip personnalisé
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white p-4 rounded-lg shadow-lg border border-gray-200">
-          <p className="text-sm font-medium text-gray-900 mb-2">
+        <div className="bg-black border border-primary/40 p-4 rounded-lg shadow-lg">
+          <p className="text-sm font-medium text-secondary mb-2">
             {payload[0].payload.date}
           </p>
           <div className="space-y-1">
-            <p className="text-sm text-violet-600">
+            <p className="text-sm text-primary">
               CA: {formatCurrency(payload[0].value)}
             </p>
-            <p className="text-sm text-green-600">
+            <p className="text-sm text-green-500">
               Bénéfice: {formatCurrency(payload[1].value)}
             </p>
           </div>
@@ -54,29 +45,12 @@ export default function SalesChart({ data }: SalesChartProps) {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-      {/* En-tête avec filtres */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold text-gray-900">
+    <div className="bg-[#0E0E0E] rounded-xl border border-[#1A1A1A] p-7">
+      {/* En-tête */}
+      <div className="mb-5">
+        <h2 className="text-[18px] font-semibold text-secondary tracking-tight">
           Évolution du chiffre d&apos;affaires
         </h2>
-
-        {/* Filtres de période */}
-        <div className="flex gap-2">
-          {periods.map((p) => (
-            <button
-              key={p.value}
-              onClick={() => setPeriod(p.value)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                period === p.value
-                  ? 'bg-violet-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              {p.label}
-            </button>
-          ))}
-        </div>
       </div>
 
       {/* Graphique */}
@@ -86,15 +60,15 @@ export default function SalesChart({ data }: SalesChartProps) {
             data={data}
             margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
           >
-            <CartesianGrid strokeDasharray="3 3" className="stroke-gray-200 dark:stroke-gray-700" />
+            <CartesianGrid strokeDasharray="0" stroke="#1A1A1A" />
             <XAxis
               dataKey="date"
-              className="text-xs text-gray-600 dark:text-gray-400"
-              stroke="currentColor"
+              stroke="#1A1A1A"
+              tick={{ fill: '#E9E9E9', fontSize: 12 }}
             />
             <YAxis
-              className="text-xs text-gray-600 dark:text-gray-400"
-              stroke="currentColor"
+              stroke="#1A1A1A"
+              tick={{ fill: '#E9E9E9', fontSize: 12 }}
               tickFormatter={(value) => `${value}€`}
             />
             <Tooltip content={<CustomTooltip />} />
@@ -107,20 +81,20 @@ export default function SalesChart({ data }: SalesChartProps) {
             <Line
               type="monotone"
               dataKey="revenue"
-              stroke="#9333ea"
-              strokeWidth={2}
+              stroke="#003CF3"
+              strokeWidth={3}
               name="Chiffre d'affaires"
-              dot={{ fill: '#9333ea', r: 4 }}
-              activeDot={{ r: 6 }}
+              dot={{ fill: '#003CF3', r: 6 }}
+              activeDot={{ r: 8, fill: '#003CF3' }}
             />
             <Line
               type="monotone"
               dataKey="profit"
-              stroke="#10B981"
-              strokeWidth={2}
+              stroke="#00D98E"
+              strokeWidth={3}
               name="Bénéfices"
-              dot={{ fill: '#10B981', r: 4 }}
-              activeDot={{ r: 6 }}
+              dot={{ fill: '#00D98E', r: 6 }}
+              activeDot={{ r: 8, fill: '#00D98E' }}
             />
           </LineChart>
         </ResponsiveContainer>
