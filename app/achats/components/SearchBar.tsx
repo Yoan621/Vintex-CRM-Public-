@@ -1,6 +1,6 @@
 'use client'
 
-import { Search, Plus } from 'lucide-react'
+import { Search, Plus, Package } from 'lucide-react'
 import { Plateforme, StatutAchat } from '@/types/achat'
 import Button from '@/components/ui/Button'
 
@@ -12,10 +12,12 @@ interface SearchBarProps {
   plateformeFilter: Plateforme | 'toutes'
   onPlateformeChange: (plateforme: Plateforme | 'toutes') => void
   onAddClick: () => void
+  onAddToStockClick?: () => void
 }
 
 /**
  * Barre de recherche avec filtres et bouton d'ajout
+ * Design harmonisé avec le Dashboard
  */
 export default function SearchBar({
   searchQuery,
@@ -24,20 +26,21 @@ export default function SearchBar({
   onStatutChange,
   plateformeFilter,
   onPlateformeChange,
-  onAddClick
+  onAddClick,
+  onAddToStockClick
 }: SearchBarProps) {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-4">
+    <div className="bg-[#0E0E0E] rounded-xl border border-[#1A1A1A] p-4">
       <div className="flex flex-col lg:flex-row gap-4">
         {/* Champ de recherche */}
         <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-secondary/40" />
           <input
             type="text"
             placeholder="Rechercher un article, vendeur..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+            className="w-full pl-10 pr-4 py-2.5 bg-transparent border border-[#1A1A1A] rounded-lg text-secondary placeholder:text-secondary/40 focus:ring-2 focus:ring-primary/40 focus:border-primary/40 transition-all"
             aria-label="Rechercher"
           />
         </div>
@@ -46,30 +49,40 @@ export default function SearchBar({
         <select
           value={statutFilter}
           onChange={(e) => onStatutChange(e.target.value as StatutAchat | 'tous')}
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all bg-white cursor-pointer"
+          className="px-4 py-2.5 bg-transparent border border-[#1A1A1A] rounded-lg text-secondary focus:ring-2 focus:ring-primary/40 focus:border-primary/40 transition-all cursor-pointer"
           aria-label="Filtrer par statut"
         >
-          <option value="tous">Tous les statuts</option>
-          <option value="en_attente">En attente</option>
-          <option value="expedie">Expédié</option>
-          <option value="recu">Reçu</option>
-          <option value="en_stock">En stock</option>
-          <option value="revendu">Revendu</option>
+          <option value="tous" className="bg-[#0E0E0E]">Tous les statuts</option>
+          <option value="en_attente" className="bg-[#0E0E0E]">En attente</option>
+          <option value="expedie" className="bg-[#0E0E0E]">Expédié</option>
+          <option value="recu" className="bg-[#0E0E0E]">Reçu</option>
+          <option value="en_stock" className="bg-[#0E0E0E]">En stock</option>
+          <option value="revendu" className="bg-[#0E0E0E]">Revendu</option>
+          <option value="retourne" className="bg-[#0E0E0E]">Retourné</option>
+          <option value="litige" className="bg-[#0E0E0E]">Litige</option>
         </select>
 
         {/* Filtre Plateforme */}
         <select
           value={plateformeFilter}
           onChange={(e) => onPlateformeChange(e.target.value as Plateforme | 'toutes')}
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all bg-white cursor-pointer"
+          className="px-4 py-2.5 bg-transparent border border-[#1A1A1A] rounded-lg text-secondary focus:ring-2 focus:ring-primary/40 focus:border-primary/40 transition-all cursor-pointer"
           aria-label="Filtrer par plateforme"
         >
-          <option value="toutes">Toutes les plateformes</option>
-          <option value="vinted">Vinted</option>
-          <option value="leboncoin">LeBonCoin</option>
-          <option value="vide_grenier">Vide-grenier</option>
-          <option value="autre">Autre</option>
+          <option value="toutes" className="bg-[#0E0E0E]">Toutes les plateformes</option>
+          <option value="vinted" className="bg-[#0E0E0E]">Vinted</option>
+          <option value="leboncoin" className="bg-[#0E0E0E]">LeBonCoin</option>
+          <option value="vide_grenier" className="bg-[#0E0E0E]">Vide-grenier</option>
+          <option value="autre" className="bg-[#0E0E0E]">Autre</option>
         </select>
+
+        {/* Bouton Ajouter au stock */}
+        {onAddToStockClick && (
+          <Button onClick={onAddToStockClick} variant="secondary">
+            <Package className="w-5 h-5" />
+            <span className="hidden sm:inline">Ajouter au stock</span>
+          </Button>
+        )}
 
         {/* Bouton Nouvel achat */}
         <Button onClick={onAddClick} variant="primary">
@@ -81,14 +94,14 @@ export default function SearchBar({
       {/* Indicateurs de filtres actifs */}
       {(searchQuery || statutFilter !== 'tous' || plateformeFilter !== 'toutes') && (
         <div className="mt-3 flex flex-wrap gap-2 items-center">
-          <span className="text-sm text-gray-500">Filtres actifs:</span>
+          <span className="text-sm text-secondary/60">Filtres actifs:</span>
 
           {searchQuery && (
-            <span className="inline-flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs">
+            <span className="inline-flex items-center gap-1 px-2 py-1 bg-primary/10 text-primary border border-primary/20 rounded text-xs">
               Recherche: "{searchQuery}"
               <button
                 onClick={() => onSearchChange('')}
-                className="hover:bg-purple-200 rounded p-0.5"
+                className="hover:bg-primary/20 rounded p-0.5 transition-colors"
                 aria-label="Effacer la recherche"
               >
                 ×
@@ -97,11 +110,11 @@ export default function SearchBar({
           )}
 
           {statutFilter !== 'tous' && (
-            <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">
+            <span className="inline-flex items-center gap-1 px-2 py-1 bg-info/10 text-info border border-info/20 rounded text-xs">
               Statut: {statutFilter}
               <button
                 onClick={() => onStatutChange('tous')}
-                className="hover:bg-blue-200 rounded p-0.5"
+                className="hover:bg-info/20 rounded p-0.5 transition-colors"
                 aria-label="Effacer le filtre statut"
               >
                 ×
@@ -110,11 +123,11 @@ export default function SearchBar({
           )}
 
           {plateformeFilter !== 'toutes' && (
-            <span className="inline-flex items-center gap-1 px-2 py-1 bg-orange-100 text-orange-700 rounded text-xs">
+            <span className="inline-flex items-center gap-1 px-2 py-1 bg-success/10 text-success border border-success/20 rounded text-xs">
               Plateforme: {plateformeFilter}
               <button
                 onClick={() => onPlateformeChange('toutes')}
-                className="hover:bg-orange-200 rounded p-0.5"
+                className="hover:bg-success/20 rounded p-0.5 transition-colors"
                 aria-label="Effacer le filtre plateforme"
               >
                 ×

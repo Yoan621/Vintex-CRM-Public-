@@ -4,7 +4,7 @@
 
 export type Plateforme = 'vinted' | 'leboncoin' | 'vide_grenier' | 'autre'
 
-export type StatutAchat = 'en_attente' | 'expedie' | 'recu' | 'en_stock' | 'revendu'
+export type StatutAchat = 'en_attente' | 'expedie' | 'recu' | 'en_stock' | 'revendu' | 'retourne' | 'litige'
 
 export interface Achat {
   id: string
@@ -18,6 +18,7 @@ export interface Achat {
   dateAchat: string
   plateforme: Plateforme
   vendeur?: string
+  compteVinted?: string
   statut: StatutAchat
   numeroSuivi?: string
   urlSuivi?: string
@@ -39,6 +40,7 @@ export interface AchatFormData {
   dateAchat: string
   plateforme: Plateforme
   vendeur?: string
+  compteVinted?: string
   numeroSuivi?: string
   prixReventePrevu?: number
   notes?: string
@@ -57,6 +59,8 @@ export interface AchatStats {
   recu: number
   enStock: number
   revendu: number
+  retourne: number
+  litige: number
 }
 
 export interface FilterOptions {

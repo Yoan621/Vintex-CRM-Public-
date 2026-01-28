@@ -1,5 +1,5 @@
 import { Plateforme, StatutAchat } from '@/types/achat'
-import { Clock, Truck, CheckCircle2, Package, DollarSign } from 'lucide-react'
+import { Clock, Truck, CheckCircle2, Package, DollarSign, RotateCcw, AlertTriangle } from 'lucide-react'
 
 interface BadgeProps {
   variant: 'statut' | 'plateforme'
@@ -8,6 +8,7 @@ interface BadgeProps {
 
 /**
  * Composant Badge avec styles et icônes appropriés
+ * Design harmonisé avec le Dashboard (fond sombre)
  */
 export default function Badge({ variant, value }: BadgeProps) {
   if (variant === 'statut') {
@@ -15,27 +16,37 @@ export default function Badge({ variant, value }: BadgeProps) {
       en_attente: {
         label: 'En attente',
         icon: Clock,
-        className: 'bg-gray-100 text-gray-700'
+        className: 'bg-info/10 text-info border border-info/20'
       },
       expedie: {
         label: 'Expédié',
         icon: Truck,
-        className: 'bg-blue-100 text-blue-700'
+        className: 'bg-[#00D9FF]/10 text-[#00D9FF] border border-[#00D9FF]/20'
       },
       recu: {
         label: 'Reçu',
         icon: CheckCircle2,
-        className: 'bg-green-100 text-green-700'
+        className: 'bg-success/10 text-success border border-success/20'
       },
       en_stock: {
         label: 'En stock',
         icon: Package,
-        className: 'bg-yellow-100 text-yellow-700'
+        className: 'bg-secondary/10 text-secondary border border-secondary/20'
       },
       revendu: {
         label: 'Revendu',
         icon: DollarSign,
-        className: 'bg-emerald-100 text-emerald-700'
+        className: 'bg-success/10 text-success border border-success/20'
+      },
+      retourne: {
+        label: 'Retourné',
+        icon: RotateCcw,
+        className: 'bg-[#FF9500]/10 text-[#FF9500] border border-[#FF9500]/20'
+      },
+      litige: {
+        label: 'Litige',
+        icon: AlertTriangle,
+        className: 'bg-red-500/10 text-red-500 border border-red-500/20'
       }
     }
 
@@ -54,26 +65,26 @@ export default function Badge({ variant, value }: BadgeProps) {
     const plateformeConfig = {
       vinted: {
         label: 'Vinted',
-        className: 'bg-purple-100 text-purple-700'
+        className: 'bg-primary/10 text-primary border border-primary/20'
       },
       leboncoin: {
         label: 'LeBonCoin',
-        className: 'bg-orange-100 text-orange-700'
+        className: 'bg-[#FF9500]/10 text-[#FF9500] border border-[#FF9500]/20'
       },
       vide_grenier: {
         label: 'Vide-grenier',
-        className: 'bg-teal-100 text-teal-700'
+        className: 'bg-[#00D9FF]/10 text-[#00D9FF] border border-[#00D9FF]/20'
       },
       autre: {
         label: 'Autre',
-        className: 'bg-gray-100 text-gray-700'
+        className: 'bg-secondary/10 text-secondary border border-secondary/20'
       }
     }
 
     const config = plateformeConfig[value as Plateforme]
 
     return (
-      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${config.className}`}>
+      <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${config.className}`}>
         {config.label}
       </span>
     )

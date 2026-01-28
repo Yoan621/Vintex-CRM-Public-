@@ -145,22 +145,22 @@ export default function BoostsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen">
+      <div className="max-w-7xl mx-auto px-6 lg:px-10 py-10">
         {/* En-tête */}
-        <div className="mb-8">
+        <div className="mb-10">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              <h1 className="text-4xl font-heading text-gray-900 mb-3">
                 Gestion des Boosts
               </h1>
-              <p className="text-gray-600">
+              <p className="text-grayMedium text-lg">
                 Suivez et gérez tous vos boosts Vinted
               </p>
             </div>
             <button
               onClick={() => setIsModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-lg transition-colors shadow-sm"
+              className="flex items-center gap-2 px-5 py-2.5 bg-gradient-primary text-white rounded-lg transition-all duration-300 shadow-soft hover:shadow-soft-md active:scale-[0.98]"
             >
               <Plus className="w-5 h-5" />
               Nouveau boost
@@ -169,12 +169,12 @@ export default function BoostsPage() {
         </div>
 
         {/* Statistiques */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
           <StatsCard
             label="Total dépensé ce mois"
             value={formatCurrency(stats.currentMonth.totalSpent)}
             icon={DollarSign}
-            iconColor="violet"
+            iconColor="primary"
             trend={{
               value: Math.abs(spentChange),
               label: 'vs mois précédent',
@@ -185,14 +185,14 @@ export default function BoostsPage() {
             label="Boosts actifs"
             value={stats.currentMonth.activeBoosts}
             icon={Zap}
-            iconColor="yellow"
+            iconColor="warning"
             subtitle={`${stats.currentMonth.totalBoosts} ce mois`}
           />
           <StatsCard
             label="Total boosts"
             value={stats.currentMonth.totalBoosts}
             icon={TrendingUp}
-            iconColor="blue"
+            iconColor="secondary"
             subtitle="Ce mois"
           />
         </div>

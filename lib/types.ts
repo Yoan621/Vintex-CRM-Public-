@@ -3,18 +3,25 @@
  */
 
 // Statuts possibles pour une commande
-export type OrderStatus = 'en_cours' | 'validée' | 'annulée'
+export type OrderStatus = 'non_traite' | 'en_cours' | 'litige' | 'validée' | 'annulée'
+
+// Nom des transporteurs disponibles
+export type Carrier = 'mondial_relay' | 'vinted_go' | 'chronopost' | 'colissimo' | 'autre'
 
 // Interface principale pour une commande
 export interface Order {
   id: string
   transactionNumber: string
   articleName: string
+  brandName: string
+  vintedAccount: string
   status: OrderStatus
+  purchaseDate: Date
   saleDate: Date
   purchasePrice: number
   salePrice: number
   trackingNumber?: string
+  carrier?: Carrier
   customerName: string
   invoice?: string
   shippingLabel?: string
@@ -23,6 +30,12 @@ export interface Order {
   validationDate?: Date
   shippingDate?: Date
   articleImage?: string
+  disputeReason?: string
+  disputeDate?: Date
+  disputeResolved?: boolean
+  disputeAction?: string
+  archived?: boolean
+  archivedDate?: Date
 }
 
 // Interface pour les KPIs (indicateurs de performance)
@@ -96,7 +109,7 @@ export type BoostPeriodFilter = 'currentMonth' | 'lastMonth' | 'last3Months' | '
 export type ArticleEtat = 'neuf' | 'tres_bon' | 'bon' | 'satisfaisant'
 
 // Statut d'un article dans le stock
-export type ArticleStatut = 'disponible' | 'en_vente' | 'vendu' | 'reserve'
+export type ArticleStatut = 'non_mise_en_ligne' | 'disponible' | 'en_vente' | 'vendu' | 'reserve'
 
 // Interface pour un article du stock
 export interface Article {
@@ -113,7 +126,7 @@ export interface Article {
   statut: ArticleStatut
   photo?: string
   description?: string
-  emplacement?: string
+  sku: string
   nombreVues?: number
   nombreFavoris?: number
 }

@@ -13,7 +13,6 @@ interface DetailAchatModalProps {
   achat: Achat | null
   onEdit: (achat: Achat) => void
   onDelete: (id: string) => void
-  onAddToStock: (achat: Achat) => void
 }
 
 /**
@@ -24,8 +23,7 @@ export default function DetailAchatModal({
   onClose,
   achat,
   onEdit,
-  onDelete,
-  onAddToStock
+  onDelete
 }: DetailAchatModalProps) {
   if (!achat) return null
 
@@ -39,13 +37,6 @@ export default function DetailAchatModal({
       onDelete(achat.id)
       onClose()
     }
-  }
-
-  const handleAddToStock = () => {
-    onAddToStock(achat)
-    console.log('TODO: Ajouter au stock', achat.id)
-    // TODO: Connecter à l'API
-    onClose()
   }
 
   const handleViewInvoice = () => {
@@ -259,13 +250,9 @@ export default function DetailAchatModal({
 
         {/* Actions */}
         <div className="flex flex-wrap justify-end gap-3 pt-6 border-t border-gray-200">
-          <Button variant="danger" onClick={handleDelete}>
+          <Button variant="destructive" onClick={handleDelete}>
             <Trash2 className="w-4 h-4" />
             Supprimer
-          </Button>
-          <Button variant="secondary" onClick={handleAddToStock}>
-            <Package className="w-4 h-4" />
-            Ajouter au stock
           </Button>
           <Button variant="primary" onClick={handleEdit}>
             <Edit className="w-4 h-4" />
