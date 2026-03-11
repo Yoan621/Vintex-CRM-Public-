@@ -10,6 +10,33 @@ datasource db {
   provider = "sqlite"
 }
 
+model Achat {
+  id                 String    @id @default(cuid())
+  numeroTransaction  String    @unique
+  nomArticle         String
+  marque             String
+  taille             String
+  prixAchat          Float
+  fraisPort          Float
+  coutTotal          Float
+  dateAchat          DateTime
+  plateforme         String
+  vendeur            String?
+  compteVinted       String?
+  statut             String    @default("en_attente")
+  numeroSuivi        String?
+  urlSuivi           String?
+  prixReventePrevu   Float?
+  margeEstimee       Float?
+  photo              String?
+  notes              String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  @@index([statut])
+  @@index([compteVinted])
+}
+
 model Article {
   id            String   @id @default(cuid())
 
