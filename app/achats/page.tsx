@@ -39,7 +39,10 @@ export default function AchatsPage() {
   useEffect(() => {
     fetch('/api/achats')
       .then(res => res.json())
-      .then(data => setAchats(data))
+      .then(data => {
+        if (Array.isArray(data)) setAchats(data)
+        else console.error('[achats]', data)
+      })
       .finally(() => setLoading(false))
   }, [])
 

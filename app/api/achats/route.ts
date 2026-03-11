@@ -3,19 +3,23 @@ import { prisma } from '@/lib/prisma'
 
 // GET /api/achats
 export async function GET() {
-  const achats = await prisma.achat.findMany({
-    orderBy: { createdAt: 'desc' }
-  })
+  try {
+    const achats = await prisma.achat.findMany({
+      orderBy: { createdAt: 'desc' }
+    })
 
-  // Sérialiser les dates en string pour le frontend
-  const serialized = achats.map(a => ({
-    ...a,
-    dateAchat: a.dateAchat.toISOString().split('T')[0],
-    createdAt: a.createdAt.toISOString(),
-    updatedAt: a.updatedAt.toISOString()
-  }))
+    const serialized = achats.map(a => ({
+      ...a,
+      dateAchat: a.dateAchat.toISOString().split('T')[0],
+      createdAt: a.createdAt.toISOString(),
+      updatedAt: a.updatedAt.toISOString()
+    }))
 
-  return NextResponse.json(serialized)
+    return NextResponse.json(serialized)
+  } catch (error) {
+    console.error('[GET /api/achats]', error)
+    return NextResponse.json({ error: String(error) }, { status: 500 })
+  }
 }
 
 // POST /api/achats
