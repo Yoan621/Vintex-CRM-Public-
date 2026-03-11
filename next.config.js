@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  serverExternalPackages: ['@prisma/client', '@libsql/client', '@prisma/adapter-libsql', 'prisma'],
   webpack: (config, { isServer }) => {
     // Ignorer les fichiers README, LICENSE et binaires dans node_modules
     config.module.rules.push({
@@ -21,3 +22,4 @@ const nextConfig = {
 }
 
 module.exports = nextConfig
+

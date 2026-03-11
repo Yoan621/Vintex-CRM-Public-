@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
@@ -40,6 +41,26 @@ model Article {
 
   @@index([statut])
   @@index([vintedId])
+}
+
+model Vente {
+  id                String   @id @default(cuid())
+  transactionNumber String   @unique
+  articleName       String
+  brandName         String?
+  vintedAccount     String
+  status            String   @default("non_traite")
+  saleDate          DateTime
+  purchaseDate      DateTime?
+  purchasePrice     Float
+  salePrice         Float
+  customerName      String
+  trackingNumber    String?
+  carrier           String?
+  createdAt         DateTime @default(now())
+
+  @@index([status])
+  @@index([vintedAccount])
 }
 
 model ScrapingLog {

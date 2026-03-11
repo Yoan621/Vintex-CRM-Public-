@@ -1,18 +1,5 @@
-import {
-  addOrders,
-  getOrders,
-  getOrdersStats,
-  getOrdersByStatus,
-  getOrdersByAccount,
-  getOrdersByPeriod
-} from '@/lib/store/ordersStore'
 import { NextRequest, NextResponse } from 'next/server'
-
-/**
- * API pour recevoir et récupérer les commandes depuis l'extension navigateur
- * POST /api/extension/orders : ajouter des commandes
- * GET /api/extension/orders : récupérer les commandes
- */
+import { prisma } from '@/lib/prisma'
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -31,123 +18,112 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { orders: ordersData } = body
 
-    // Validation
-    if (!ordersData || !Array.isArray(ordersData)) {
+    if (!ordersData || !Array.isArray(ordersData) || ordersData.length === 0) {
       return NextResponse.json(
-        { error: 'Les données doivent contenir un array "orders"' },
-        { status: 400 }
+        { error: 'Les données doivent contenir un array "orders" non vide' },
+        { status: 400, headers: CORS_HEADERS }
       )
     }
 
-    if (ordersData.length === 0) {
-      return NextResponse.json(
-        { error: 'Aucune commande à ajouter' },
-        { status: 400 }
+    // Upsert chaque commande (évite les doublons via transactionNumber unique)
+    const results = await Promise.all(
+      ordersData.map((order: {
+        transactionNumber: string
+        articleName: string
+        brandName?: string
+        vintedAccount: string
+        status?: string
+        saleDate: string | Date
+        purchaseDate?: string | Date
+        purchasePrice: number
+        salePrice: number
+        customerName: string
+        trackingNumber?: string
+        carrier?: string
+      }) =>
+        prisma.vente.upsert({
+          where: { transactionNumber: order.transactionNumber },
+          update: {
+            status: order.status ?? 'non_traite',
+            salePrice: order.salePrice,
+            customerName: order.customerName,
+          },
+          create: {
+            transactionNumber: order.transactionNumber,
+            articleName: order.articleName,
+            brandName: order.brandName,
+            vintedAccount: order.vintedAccount,
+            status: order.status ?? 'non_traite',
+            saleDate: new Date(order.saleDate),
+            purchaseDate: order.purchaseDate ? new Date(order.purchaseDate) : null,
+            purchasePrice: order.purchasePrice,
+            salePrice: order.salePrice,
+            customerName: order.customerName,
+            trackingNumber: order.trackingNumber,
+            carrier: order.carrier,
+          },
+        })
       )
-    }
-
-    // Ajouter les commandes au store
-    const added = addOrders(ordersData)
+    )
 
     return NextResponse.json(
       {
         success: true,
-        message: `✅ ${added.length} commande(s) reçue(s) et stockée(s)`,
-        count: added.length,
-        orders: added
+        message: `✅ ${results.length} commande(s) reçue(s) et stockée(s)`,
+        count: results.length,
       },
       { status: 201, headers: CORS_HEADERS }
     )
   } catch (error) {
     console.error('❌ Erreur lors de la réception des commandes:', error)
     return NextResponse.json(
-      {
-        error: 'Erreur lors de la sauvegarde des commandes',
-        details: error instanceof Error ? error.message : 'Erreur inconnue'
-      },
+      { error: 'Erreur lors de la sauvegarde', details: error instanceof Error ? error.message : 'Erreur inconnue' },
       { status: 500, headers: CORS_HEADERS }
     )
   }
 }
 
-// GET : récupérer les commandes avec filtres optionnels
+// GET : récupérer les commandes depuis la DB
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const status = searchParams.get('status') as 'non_traite' | 'validee' | 'annulee' | null
-    const account = searchParams.get('account') as string | null
-    const stats = searchParams.get('stats') === 'true'
-    const period = searchParams.get('period') as string | null
+    const status = searchParams.get('status')
+    const account = searchParams.get('account')
 
-    let result = getOrders()
+    const ventes = await prisma.vente.findMany({
+      where: {
+        ...(status ? { status } : {}),
+        ...(account ? { vintedAccount: account } : {}),
+      },
+      orderBy: { saleDate: 'desc' },
+    })
 
-    // Filtrer par statut
-    if (status) {
-      result = result.filter(o => o.status === status)
-    }
+    // Convertir au format attendu par le frontend
+    const orders = ventes.map(v => ({
+      id: v.id,
+      transactionNumber: v.transactionNumber,
+      articleName: v.articleName,
+      brandName: v.brandName,
+      vintedAccount: v.vintedAccount,
+      status: v.status,
+      saleDate: v.saleDate,
+      purchaseDate: v.purchaseDate,
+      purchasePrice: v.purchasePrice,
+      salePrice: v.salePrice,
+      customerName: v.customerName,
+      trackingNumber: v.trackingNumber,
+      carrier: v.carrier,
+    }))
 
-    // Filtrer par compte
-    if (account) {
-      result = result.filter(o => o.vintedAccount === account)
-    }
-
-    // Filtrer par période (format: startDate,endDate)
-    if (period) {
-      const [startStr, endStr] = period.split(',')
-      if (startStr && endStr) {
-        const startDate = new Date(startStr)
-        const endDate = new Date(endStr)
-        result = getOrdersByPeriod(startDate, endDate)
-      }
-    }
-
-    // Ajouter les stats si demandé
-    if (stats) {
-      return NextResponse.json({
-        success: true,
-        count: result.length,
-        stats: getOrdersStats(),
-        orders: result
-      }, { headers: CORS_HEADERS })
-    }
-
-    return NextResponse.json({
-      success: true,
-      count: result.length,
-      orders: result
-    }, { headers: CORS_HEADERS })
+    return NextResponse.json(
+      { success: true, count: orders.length, orders },
+      { headers: CORS_HEADERS }
+    )
   } catch (error) {
-    console.error('❌ Erreur lors de la récupération des commandes:', error)
+    console.error('❌ Erreur lors de la récupération:', error)
     return NextResponse.json(
       { error: 'Erreur lors de la récupération des commandes' },
       { status: 500, headers: CORS_HEADERS }
     )
   }
 }
-
-/**
- * Exemples d'utilisation:
- * 
- * POST /api/extension/orders
- * {
- *   "orders": [
- *     {
- *       "transactionNumber": "#VT-2025-001",
- *       "articleName": "Jordan 1 Retro High",
- *       "brandName": "Nike",
- *       "vintedAccount": "@vintex_shop",
- *       "status": "non_traite",
- *       "saleDate": "2025-12-22T00:00:00Z",
- *       "purchasePrice": 95,
- *       "salePrice": 180,
- *       "customerName": "Alexandre Petit"
- *     }
- *   ]
- * }
- *
- * GET /api/extension/orders
- * GET /api/extension/orders?status=non_traite
- * GET /api/extension/orders?account=@vintex_shop
- * GET /api/extension/orders?stats=true
- * GET /api/extension/orders?period=2025-01-01,2025-01-31
- */
