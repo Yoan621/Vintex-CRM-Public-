@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import SalesTable from '@/components/ventes/SalesTable'
 import StatsCard from '@/components/shared/StatsCard'
-import { getOrders, addOrder, getUniqueAccounts } from '@/lib/store/ordersStore'
+import { addOrder } from '@/lib/store/ordersStore'
 import { calculateProfit } from '@/lib/utils'
 import { DollarSign, TrendingUp, Package, Clock } from 'lucide-react'
 import DashboardHeader from '@/components/dashboard/DashboardHeader'
@@ -27,11 +27,17 @@ export default function VentesPage() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0)
 
-  // Récupérer les commandes depuis le store (au lieu de mockData)
-  const orders = getOrders()
+  // Récupérer les commandes depuis l'API (pas directement du store côté client)
+  const [orders, setOrders] = useState<Order[]>([])
+  useEffect(() => {
+    fetch('/api/extension/orders')
+      .then(res => res.json())
+      .then(data => setOrders(data.orders || []))
+      .catch(() => setOrders([]))
+  }, [refreshKey])
 
-  // Récupérer la liste des comptes Vinted depuis le store
-  const uniqueAccounts = getUniqueAccounts()
+  // Récupérer la liste des comptes Vinted depuis les commandes
+  const uniqueAccounts = Array.from(new Set(orders.map((o: Order) => o.vintedAccount)))
 
   // Filtrer les commandes selon le compte sélectionné
   const filteredOrdersByAccount = selectedAccount === 'all'
@@ -77,7 +83,7 @@ export default function VentesPage() {
       articleName: data.articleName,
       brandName: data.brandName,
       vintedAccount: data.vintedAccount,
-      status: data.status,
+      status: data.status as Order['status'],
       purchaseDate: new Date(data.saleDate),
       saleDate: new Date(data.saleDate),
       purchasePrice: data.purchasePrice,

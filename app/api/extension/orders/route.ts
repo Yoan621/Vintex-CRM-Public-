@@ -1,10 +1,10 @@
-import { 
-  addOrders, 
-  getOrders, 
+import {
+  addOrders,
+  getOrders,
   getOrdersStats,
   getOrdersByStatus,
   getOrdersByAccount,
-  getOrdersByPeriod 
+  getOrdersByPeriod
 } from '@/lib/store/ordersStore'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -13,6 +13,17 @@ import { NextRequest, NextResponse } from 'next/server'
  * POST /api/extension/orders : ajouter des commandes
  * GET /api/extension/orders : récupérer les commandes
  */
+
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+}
+
+// OPTIONS : preflight CORS pour l'extension navigateur
+export async function OPTIONS() {
+  return new NextResponse(null, { status: 204, headers: CORS_HEADERS })
+}
 
 // POST : recevoir les commandes depuis l'extension
 export async function POST(request: NextRequest) {
@@ -45,16 +56,16 @@ export async function POST(request: NextRequest) {
         count: added.length,
         orders: added
       },
-      { status: 201 }
+      { status: 201, headers: CORS_HEADERS }
     )
   } catch (error) {
     console.error('❌ Erreur lors de la réception des commandes:', error)
     return NextResponse.json(
-      { 
+      {
         error: 'Erreur lors de la sauvegarde des commandes',
         details: error instanceof Error ? error.message : 'Erreur inconnue'
       },
-      { status: 500 }
+      { status: 500, headers: CORS_HEADERS }
     )
   }
 }
@@ -97,19 +108,19 @@ export async function GET(request: NextRequest) {
         count: result.length,
         stats: getOrdersStats(),
         orders: result
-      })
+      }, { headers: CORS_HEADERS })
     }
 
     return NextResponse.json({
       success: true,
       count: result.length,
       orders: result
-    })
+    }, { headers: CORS_HEADERS })
   } catch (error) {
     console.error('❌ Erreur lors de la récupération des commandes:', error)
     return NextResponse.json(
       { error: 'Erreur lors de la récupération des commandes' },
-      { status: 500 }
+      { status: 500, headers: CORS_HEADERS }
     )
   }
 }
