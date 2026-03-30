@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Plus, TrendingUp, Zap, DollarSign } from 'lucide-react'
+import { TrendingUp, Zap, DollarSign, Menu, User, ChevronDown, RefreshCw, Crown } from 'lucide-react'
 import BoostTable from '@/components/boosts/BoostTable'
 import BoostFilters from '@/components/boosts/BoostFilters'
 import BoostModal, { type BoostFormData } from '@/components/boosts/BoostModal'
@@ -13,16 +13,18 @@ import {
   calculateBoostMonthlyStats,
   calculatePercentageChange,
 } from '@/lib/utils'
+import { useSidebar } from '@/contexts/SidebarContext'
 
-/**
- * Page de gestion des boosts Vinted
- */
+type TimeFilter = 'Jour' | 'Semaine' | 'Mois' | 'Année'
+
 export default function BoostsPage() {
   const [boosts, setBoosts] = useState<Boost[]>(mockBoosts)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState<BoostStatus | 'tous'>('tous')
   const [periodFilter, setPeriodFilter] = useState<BoostPeriodFilter>('currentMonth')
+  const [activeTimeFilter, setActiveTimeFilter] = useState<TimeFilter>('Mois')
+  const { toggleSidebar } = useSidebar()
 
   // Calcul des statistiques
   const stats = calculateBoostMonthlyStats(boosts)
@@ -144,29 +146,71 @@ export default function BoostsPage() {
     link.click()
   }
 
+  const timeFilters: TimeFilter[] = ['Jour', 'Semaine', 'Mois', 'Année']
+
   return (
     <div className="min-h-screen">
-      <div className="max-w-7xl mx-auto px-6 lg:px-10 py-10">
-        {/* En-tête */}
-        <div className="mb-10">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-4xl font-heading text-gray-900 mb-3">
-                Gestion des Boosts
-              </h1>
-              <p className="text-grayMedium text-lg">
-                Suivez et gérez tous vos boosts Vinted
-              </p>
-            </div>
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="flex items-center gap-2 px-5 py-2.5 bg-gradient-primary text-white rounded-lg transition-all duration-300 shadow-soft hover:shadow-soft-md active:scale-[0.98]"
-            >
-              <Plus className="w-5 h-5" />
-              Nouveau boost
+      {/* ───── TOOLBAR ───── */}
+      <div className="bg-black border-b border-[#1A1A1A] sticky top-0 z-40">
+      <div className="flex flex-wrap justify-between items-center px-4 sm:px-8 h-auto sm:h-[60px] gap-3 sm:gap-0 py-3 sm:py-0">
+        <div className="flex items-center gap-4">
+          <button
+            onClick={toggleSidebar}
+            title="Masquer/Afficher la barre latérale"
+            className="w-9 h-9 bg-[#18181b] border border-transparent rounded-[10px] flex items-center justify-center text-white hover:bg-[#003CF3] hover:shadow-[0_4px_16px_rgba(0,60,243,0.4)] hover:scale-105 transition-all duration-250"
+          >
+            <Menu className="w-[18px] h-[18px]" />
+          </button>
+          <nav className="flex items-center gap-3">
+            <span className="text-[15px] font-medium tracking-tight text-white px-1 py-2">Gestion des Boosts</span>
+          </nav>
+        </div>
+
+        <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap">
+          {/* Filtres temporels */}
+          <div className="inline-flex items-center bg-[#18181b] border border-[#27272a] rounded-lg p-1 gap-1 h-10">
+            {timeFilters.map((label) => (
+              <button
+                key={label}
+                onClick={() => setActiveTimeFilter(label)}
+                className={`px-3.5 py-2 rounded-[10px] text-[15px] font-medium tracking-tight transition-all duration-250 ease-out h-8 min-w-[70px] ${
+                  activeTimeFilter === label
+                    ? 'bg-[#003CF3] text-white shadow-[0_4px_16px_rgba(0,60,243,0.4)]'
+                    : 'bg-transparent text-[#E9E9E9]/60 hover:bg-[#003CF3]/10 hover:text-white'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {/* Sélecteur de compte */}
+          <div className="relative">
+            <button className="flex items-center gap-2 h-10 px-4 bg-[#18181b] border border-[#27272a] rounded-[10px] text-white hover:bg-[#1f1f23] hover:border-[#003CF3]/40 transition-all duration-250">
+              <User className="w-4 h-4 text-white/70" />
+              <span className="text-[14px] font-medium tracking-tight">Tous les comptes</span>
+              <ChevronDown className="w-4 h-4 text-white/70 transition-transform duration-200" />
             </button>
           </div>
+
+          {/* Bouton refresh */}
+          <button
+            title="Actualiser"
+            className="w-10 h-10 bg-[#18181b] border border-[#27272a] rounded-[10px] flex items-center justify-center text-white/70 hover:bg-[#003CF3] hover:shadow-[0_4px_16px_rgba(0,60,243,0.4)] hover:text-white hover:rotate-180 hover:scale-105 transition-all duration-400"
+          >
+            <RefreshCw className="w-[18px] h-[18px]" />
+          </button>
+
+          {/* CTA Pro */}
+          <button className="flex items-center gap-2 bg-gradient-to-r from-[#003CF3] to-[#0052CC] text-white px-5 py-2.5 rounded-[10px] font-semibold text-[14px] tracking-tight h-10 shadow-[0_4px_16px_rgba(0,102,255,0.4)] hover:-translate-y-1 hover:shadow-[0_4px_20px_rgba(0,102,255,0.5)] hover:scale-105 transition-all duration-250">
+            <Crown className="w-4 h-4" />
+            <span>Passer à Pro</span>
+          </button>
         </div>
+      </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6 lg:px-10 py-10">
 
         {/* Statistiques */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
@@ -185,14 +229,14 @@ export default function BoostsPage() {
             label="Boosts actifs"
             value={stats.currentMonth.activeBoosts}
             icon={Zap}
-            iconColor="warning"
+            iconColor="primary"
             subtitle={`${stats.currentMonth.totalBoosts} ce mois`}
           />
           <StatsCard
             label="Total boosts"
             value={stats.currentMonth.totalBoosts}
             icon={TrendingUp}
-            iconColor="secondary"
+            iconColor="primary"
             subtitle="Ce mois"
           />
         </div>
@@ -206,6 +250,7 @@ export default function BoostsPage() {
           periodFilter={periodFilter}
           onPeriodFilterChange={setPeriodFilter}
           onExportCSV={handleExportCSV}
+          onAddBoost={() => setIsModalOpen(true)}
         />
 
         {/* Tableau */}

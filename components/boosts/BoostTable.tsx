@@ -80,15 +80,15 @@ export default function BoostTable({ boosts, onCancelBoost }: BoostTableProps) {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div className="bg-[#0E0E0E] rounded-xl shadow-sm border border-[#1A1A1A] overflow-hidden">
       {/* Tableau */}
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-gray-50">
+          <thead className="bg-[#0E0E0E]">
             <tr>
               <th
                 onClick={() => handleSort('date')}
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                className="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider cursor-pointer hover:bg-[#18181b] transition-colors"
               >
                 <div className="flex items-center gap-2">
                   Date
@@ -97,7 +97,7 @@ export default function BoostTable({ boosts, onCancelBoost }: BoostTableProps) {
               </th>
               <th
                 onClick={() => handleSort('article')}
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                className="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider cursor-pointer hover:bg-[#18181b] transition-colors"
               >
                 <div className="flex items-center gap-2">
                   Article
@@ -106,7 +106,7 @@ export default function BoostTable({ boosts, onCancelBoost }: BoostTableProps) {
               </th>
               <th
                 onClick={() => handleSort('prix')}
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                className="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider cursor-pointer hover:bg-[#18181b] transition-colors"
               >
                 <div className="flex items-center gap-2">
                   Prix
@@ -115,34 +115,34 @@ export default function BoostTable({ boosts, onCancelBoost }: BoostTableProps) {
               </th>
               <th
                 onClick={() => handleSort('status')}
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                className="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider cursor-pointer hover:bg-[#18181b] transition-colors"
               >
                 <div className="flex items-center gap-2">
                   Statut
                   <SortIcon columnKey="status" />
                 </div>
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
                 Expiration
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+          <tbody className="bg-[#0E0E0E] divide-y divide-[#1A1A1A]">
             {currentBoosts.map((boost) => {
               const expiringSoon = isBoostExpiringSoon(boost)
 
               return (
                 <tr
                   key={boost.id}
-                  className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  className="hover:bg-[#18181b] transition-colors"
                 >
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                     {formatDate(boost.date)}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
+                  <td className="px-6 py-4 text-sm text-white">
                     <div className="flex items-center gap-2">
                       {boost.article}
                       {expiringSoon && (
@@ -152,7 +152,7 @@ export default function BoostTable({ boosts, onCancelBoost }: BoostTableProps) {
                       )}
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
                     {formatCurrency(boost.prix)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -164,13 +164,13 @@ export default function BoostTable({ boosts, onCancelBoost }: BoostTableProps) {
                       {getBoostStatusLabel(boost.status)}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white/60">
                     {boost.dateExpiration ? formatDate(boost.dateExpiration) : '-'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     <div className="flex items-center gap-2">
                       <button
-                        className="p-2 text-gray-600 hover:text-violet-600 hover:bg-violet-50 rounded transition-colors"
+                        className="p-2 text-white/60 hover:text-[#003CF3] hover:bg-[#003CF3]/10 rounded transition-colors"
                         title="Voir les détails"
                       >
                         <Eye className="w-4 h-4" />
@@ -178,7 +178,7 @@ export default function BoostTable({ boosts, onCancelBoost }: BoostTableProps) {
                       {boost.status === 'actif' && onCancelBoost && (
                         <button
                           onClick={() => onCancelBoost(boost.id)}
-                          className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                          className="p-2 text-white/60 hover:text-red-600 hover:bg-red-600/10 rounded transition-colors"
                           title="Annuler le boost"
                         >
                           <X className="w-4 h-4" />
@@ -190,15 +190,15 @@ export default function BoostTable({ boosts, onCancelBoost }: BoostTableProps) {
               )
             })}
           </tbody>
-          <tfoot className="bg-gray-50">
+          <tfoot className="bg-[#0E0E0E] border-t border-[#1A1A1A]">
             <tr>
               <td
                 colSpan={2}
-                className="px-6 py-4 text-sm font-medium text-gray-900"
+                className="px-6 py-4 text-sm font-medium text-white"
               >
                 Total (page actuelle)
               </td>
-              <td className="px-6 py-4 text-sm font-bold text-gray-900">
+              <td className="px-6 py-4 text-sm font-bold text-white">
                 {formatCurrency(totalSpent)}
               </td>
               <td colSpan={3}></td>
@@ -209,16 +209,16 @@ export default function BoostTable({ boosts, onCancelBoost }: BoostTableProps) {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="px-6 py-4 border-t border-gray-100">
+        <div className="px-6 py-4 border-t border-[#1A1A1A]">
           <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-white/60">
               Page {currentPage} sur {totalPages} • {sortedBoosts.length} boost(s) au total
             </div>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
-                className="p-2 text-gray-600 hover:text-violet-600 disabled:opacity-50 disabled:cursor-not-allowed rounded transition-colors"
+                className="p-2 text-white/60 hover:text-[#003CF3] disabled:opacity-50 disabled:cursor-not-allowed rounded transition-colors"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
@@ -229,8 +229,8 @@ export default function BoostTable({ boosts, onCancelBoost }: BoostTableProps) {
                     onClick={() => setCurrentPage(page)}
                     className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
                       currentPage === page
-                        ? 'bg-violet-600 text-white'
-                        : 'text-gray-600 hover:bg-gray-100'
+                        ? 'bg-[#003CF3] text-white'
+                        : 'text-white/60 hover:bg-[#18181b]'
                     }`}
                   >
                     {page}
@@ -240,7 +240,7 @@ export default function BoostTable({ boosts, onCancelBoost }: BoostTableProps) {
               <button
                 onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                 disabled={currentPage === totalPages}
-                className="p-2 text-gray-600 hover:text-violet-600 disabled:opacity-50 disabled:cursor-not-allowed rounded transition-colors"
+                className="p-2 text-white/60 hover:text-[#003CF3] disabled:opacity-50 disabled:cursor-not-allowed rounded transition-colors"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>

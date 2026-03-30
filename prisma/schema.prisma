@@ -54,3 +54,210 @@ model ScrapingLog {
 
   @@index([dateExecution])
 }
+
+// ───────────────────────────────────────────────────────────────────────────
+// MODÈLES POUR LA SYNCHRONISATION VINTED (Extension Chrome)
+// ───────────────────────────────────────────────────────────────────────────
+
+model Vente {
+  id                String   @id @default(cuid())
+
+  // Identifiants
+  transactionNumber String   @unique
+  vintedId          String?  @unique
+
+  // Article
+  articleName       String
+  brandName         String
+  articleImage      String?
+
+  // Prix
+  purchasePrice     Float    @default(0)
+  salePrice         Float
+  profit            Float
+
+  // Dates
+  purchaseDate      DateTime
+  saleDate          DateTime
+  validationDate    DateTime?
+  shippingDate      DateTime?
+  cancellationDate  DateTime?
+
+  // Livraison
+  trackingNumber    String?
+  carrier           String?
+
+  // Parties
+  customerName      String
+  vintedAccount     String
+
+  // Statut
+  status            String   // non_traite | en_cours | validée | litige | annulée
+
+  // Documents
+  invoice           String?
+  shippingLabel     String?
+
+  // Litige
+  disputeReason     String?
+  disputeDate       DateTime?
+  disputeResolved   Boolean  @default(false)
+  disputeAction     String?
+
+  // Annulation
+  cancellationReason String?
+
+  // Archivage
+  archived          Boolean  @default(false)
+  archivedDate      DateTime?
+
+  // Métadonnées
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  syncedAt          DateTime @default(now())
+  syncSource        String   @default("extension") // extension | manual | api
+
+  @@index([status])
+  @@index([vintedAccount])
+  @@index([saleDate])
+  @@index([syncedAt])
+}
+
+model Achat {
+  id                String   @id @default(cuid())
+
+  // Identifiants
+  numeroTransaction String   @unique
+  vintedId          String?  @unique
+
+  // Article
+  nomArticle        String
+  marque            String
+  taille            String
+  photo             String?
+
+  // Prix
+  prixAchat         Float
+  fraisPort         Float    @default(0)
+  coutTotal         Float
+  prixReventePrevu  Float?
+  margeEstimee      Float    @default(0)
+
+  // Transaction
+  dateAchat         DateTime
+  plateforme        String   @default("vinted")
+  vendeur           String?
+  compteVinted      String
+
+  // Livraison
+  numeroSuivi       String?
+
+  // Statut
+  statut            String   @default("en_attente") // en_attente | expedie | recu | en_stock | revendu | retourne | litige
+
+  // Notes
+  notes             String?
+
+  // Métadonnées
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  syncedAt          DateTime @default(now())
+  syncSource        String   @default("extension")
+
+  @@index([statut])
+  @@index([compteVinted])
+  @@index([dateAchat])
+  @@index([syncedAt])
+}
+
+model Boost {
+  id                String   @id @default(cuid())
+
+  // Boost info
+  date              DateTime
+  article           String
+  articleId         String?  // Référence à Article.vintedId
+  prix              Float
+  duration          String   // 3j | 7j
+
+  // Dates
+  dateExpiration    DateTime?
+
+  // Statut
+  status            String   // actif | expiré | annulé
+
+  // Métadonnées
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  syncedAt          DateTime @default(now())
+  syncSource        String   @default("extension")
+
+  @@index([status])
+  @@index([date])
+  @@index([syncedAt])
+}
+
+model SyncLog {
+  id                String   @id @default(cuid())
+
+  // Type de sync
+  syncType          String   // ventes | achats | articles | boosts | full
+
+  // Statut
+  status            String   // success | error | partial
+
+  // Résultats
+  itemsProcessed    Int      @default(0)
+  itemsCreated      Int      @default(0)
+  itemsUpdated      Int      @default(0)
+  itemsDeleted      Int      @default(0)
+  itemsErrors       Int      @default(0)
+
+  // Durée
+  startTime         DateTime @default(now())
+  endTime           DateTime?
+  durationSeconds   Int?
+
+  // Source
+  source            String   @default("extension") // extension | manual | cron
+
+  // Erreurs
+  errorMessage      String?
+  errorDetails      String?  // JSON des erreurs détaillées
+
+  // Métadonnées
+  createdAt         DateTime @default(now())
+
+  @@index([syncType])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model ExtensionConfig {
+  id                String   @id @default(cuid())
+
+  // Identifiant unique de l'utilisateur/extension
+  apiKey            String   @unique
+
+  // Configuration sync
+  syncInterval      Int      @default(15) // minutes
+  autoSync          Boolean  @default(true)
+
+  // Types de données à synchroniser
+  syncVentes        Boolean  @default(true)
+  syncAchats        Boolean  @default(true)
+  syncArticles      Boolean  @default(true)
+  syncBoosts        Boolean  @default(true)
+
+  // Dernier sync
+  lastSyncVentes    DateTime?
+  lastSyncAchats    DateTime?
+  lastSyncArticles  DateTime?
+  lastSyncBoosts    DateTime?
+
+  // Métadonnées
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([apiKey])
+}

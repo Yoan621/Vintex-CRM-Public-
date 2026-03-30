@@ -26,18 +26,18 @@ export default function DashboardHeader({
   onAccountChange = () => {},
   accounts
 }: DashboardHeaderProps) {
-  const { toggleSidebar } = useSidebar()
+  const { toggleCollapse } = useSidebar()
 
   return (
     <div className="bg-black border-b border-[#1A1A1A] sticky top-0 z-40">
       <div className="flex justify-between items-center px-8 h-[60px]">
         {/* Partie gauche : Menu + Breadcrumb */}
         <div className="flex items-center gap-4">
-          {/* Icône menu hamburger - Toggle sidebar */}
+          {/* Icône menu hamburger - Toggle collapse sidebar */}
           <button
-            onClick={toggleSidebar}
+            onClick={toggleCollapse}
             className="w-9 h-9 bg-[#18181b] border border-transparent rounded-[10px] flex items-center justify-center text-white hover:bg-[#003CF3] hover:shadow-[0_4px_16px_rgba(0,60,243,0.4)] hover:scale-105 transition-all duration-250"
-            title="Masquer/Afficher la barre latérale"
+            title="Réduire/Étendre la barre latérale"
           >
             <Menu size={18} />
           </button>

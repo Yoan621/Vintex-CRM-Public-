@@ -1,6 +1,6 @@
 'use client'
 
-import { Search, Download } from 'lucide-react'
+import { Search, Download, Plus } from 'lucide-react'
 import type { BoostStatus, BoostPeriodFilter } from '@/lib/types'
 
 interface BoostFiltersProps {
@@ -11,11 +11,9 @@ interface BoostFiltersProps {
   periodFilter: BoostPeriodFilter
   onPeriodFilterChange: (period: BoostPeriodFilter) => void
   onExportCSV?: () => void
+  onAddBoost?: () => void
 }
 
-/**
- * Composant de filtres et recherche pour les boosts
- */
 export default function BoostFilters({
   searchTerm,
   onSearchChange,
@@ -24,6 +22,7 @@ export default function BoostFilters({
   periodFilter,
   onPeriodFilterChange,
   onExportCSV,
+  onAddBoost,
 }: BoostFiltersProps) {
   const statusOptions: { value: BoostStatus | 'tous'; label: string }[] = [
     { value: 'tous', label: 'Tous' },
@@ -40,55 +39,59 @@ export default function BoostFilters({
   ]
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+    <div className="bg-[#0E0E0E] border border-[#27272a] rounded-xl shadow-soft p-6 mb-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Barre de recherche */}
+        {/* Recherche */}
         <div className="lg:col-span-2">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-[13px] font-medium text-white/70 mb-2">
             Rechercher
           </label>
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center">
+              <Search className="w-4 h-4 text-white/60" />
+            </div>
             <input
               type="text"
-              placeholder="Rechercher un article boosté..."
+              placeholder="Rechercher : article, marque, n° commande, client, compte…"
               value={searchTerm}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-600 focus:border-violet-600 transition-colors"
+              className="w-full h-10 pl-10 pr-10 bg-[#18181b] border border-[#27272a] rounded-[10px] text-[14px] text-white placeholder:text-secondary/40 focus:outline-none focus:border-primary/40 transition-colors"
             />
           </div>
         </div>
 
-        {/* Filtre par statut */}
+        {/* Statut */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-[13px] font-medium text-white/70 mb-2">
             Statut
           </label>
           <select
             value={statusFilter}
             onChange={(e) => onStatusFilterChange(e.target.value as BoostStatus | 'tous')}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-600 focus:border-violet-600 transition-colors"
+            className="w-full h-10 px-4 bg-[#18181b] border border-[#27272a] rounded-[10px] text-[14px] text-white focus:outline-none focus:border-[#003CF3]/40 focus:ring-0 transition-colors appearance-none cursor-pointer"
+            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}
           >
             {statusOptions.map((option) => (
-              <option key={option.value} value={option.value}>
+              <option key={option.value} value={option.value} className="bg-[#18181b] text-white">
                 {option.label}
               </option>
             ))}
           </select>
         </div>
 
-        {/* Filtre par période */}
+        {/* Période */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-[13px] font-medium text-white/70 mb-2">
             Période
           </label>
           <select
             value={periodFilter}
             onChange={(e) => onPeriodFilterChange(e.target.value as BoostPeriodFilter)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-600 focus:border-violet-600 transition-colors"
+            className="w-full h-10 px-4 bg-[#18181b] border border-[#27272a] rounded-[10px] text-[14px] text-white focus:outline-none focus:border-[#003CF3]/40 focus:ring-0 transition-colors appearance-none cursor-pointer"
+            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}
           >
             {periodOptions.map((option) => (
-              <option key={option.value} value={option.value}>
+              <option key={option.value} value={option.value} className="bg-[#18181b] text-white">
                 {option.label}
               </option>
             ))}
@@ -96,16 +99,32 @@ export default function BoostFilters({
         </div>
       </div>
 
-      {/* Bouton Export CSV */}
-      {onExportCSV && (
-        <div className="mt-4 flex justify-end">
-          <button
-            onClick={onExportCSV}
-            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-          >
-            <Download className="w-4 h-4" />
-            Exporter en CSV
-          </button>
+      {/* Actions */}
+      {(onAddBoost || onExportCSV) && (
+        <div className="mt-5 flex justify-between items-center">
+          {/* Bouton Ajouter un boost */}
+          {onAddBoost && (
+            <button
+              onClick={onAddBoost}
+              className="flex items-center gap-3 px-5 py-2.5 bg-gradient-to-r from-[#003CF3] to-[#0052CC] text-white rounded-[10px] font-semibold text-[14px] tracking-tight shadow-[0_4px_16px_rgba(0,60,243,0.4)] hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(0,60,243,0.5)] transition-all duration-250"
+            >
+              <Plus className="w-4 h-4" />
+              Ajouter un boost
+            </button>
+          )}
+
+          {/* Bouton Export CSV */}
+          {onExportCSV && (
+            <button
+              onClick={onExportCSV}
+              className="flex items-center gap-3 px-5 py-2.5 bg-[#1a1f23] border border-[#27272a] rounded-[10px] text-white text-[14px] font-medium tracking-tight hover:border-[#003CF3]/40 hover:bg-[#1f1f23] transition-all duration-250"
+            >
+              <div className="p-1.5 rounded-full bg-[#003CF3] shadow-[0_4px_16px_rgba(0,60,243,0.4)] flex items-center justify-center">
+                <Download className="w-3.5 h-3.5 text-white" />
+              </div>
+              Exporter en CSV
+            </button>
+          )}
         </div>
       )}
     </div>

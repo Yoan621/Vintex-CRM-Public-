@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Archivo, Inter } from 'next/font/google'
+import { Archivo, Inter, Manrope, Cabin, Instrument_Serif } from 'next/font/google'
 import LayoutClient from '@/components/layout/LayoutClient'
 import './globals.css'
 
@@ -14,6 +14,27 @@ const archivoExpanded = Archivo({
   variable: '--font-heading',
   display: 'swap',
   weight: ['400', '500', '600', '700'],
+})
+
+const manrope = Manrope({
+  subsets: ['latin'],
+  variable: '--font-manrope',
+  display: 'swap',
+  weight: ['400', '500', '600', '700', '800'],
+})
+
+const cabin = Cabin({
+  subsets: ['latin'],
+  variable: '--font-cabin',
+  display: 'swap',
+  weight: ['400', '500', '600', '700'],
+})
+
+const instrumentSerif = Instrument_Serif({
+  subsets: ['latin'],
+  variable: '--font-instrument',
+  display: 'swap',
+  weight: '400',
 })
 
 export const metadata: Metadata = {
@@ -31,7 +52,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="fr" className={`${interTight.variable} ${archivoExpanded.variable}`}>
+    <html lang="fr" className={`${interTight.variable} ${archivoExpanded.variable} ${manrope.variable} ${cabin.variable} ${instrumentSerif.variable}`}>
       <body className={interTight.className}>
         <LayoutClient>{children}</LayoutClient>
       </body>

@@ -1,15 +1,16 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import SalesTable from '@/components/ventes/SalesTable'
+import OrdersTable from '@/components/dashboard/OrdersTable'
 import StatsCard from '@/components/shared/StatsCard'
 import { getOrders, addOrder, getUniqueAccounts } from '@/lib/store/ordersStore'
 import { calculateProfit } from '@/lib/utils'
-import { DollarSign, TrendingUp, Package, Clock } from 'lucide-react'
+import { DollarSign, TrendingUp, Package, Clock, Plus } from 'lucide-react'
 import DashboardHeader from '@/components/dashboard/DashboardHeader'
 import { TimePeriod } from '@/components/shared/TimeFilter'
 import { AccountOption } from '@/components/dashboard/AccountSelector'
 import AddSaleModal, { SaleFormData } from '@/components/ventes/AddSaleModal'
+import Button from '@/components/ui/Button'
 import type { Order } from '@/lib/types'
 
 /**
@@ -76,7 +77,7 @@ export default function VentesPage() {
       transactionNumber: data.transactionNumber,
       articleName: data.articleName,
       brandName: data.brandName,
-      vintedAccount: data.vintedAccount,
+      vintedAccount: data.platform === 'vinted' ? data.vintedAccount : `${data.platform} - ${data.vintedAccount}`,
       status: data.status,
       purchaseDate: new Date(data.saleDate),
       saleDate: new Date(data.saleDate),
@@ -143,7 +144,7 @@ export default function VentesPage() {
         </div>
 
         {/* Tableau des ventes */}
-        <SalesTable orders={ordersByPeriod} onAddClick={() => setIsAddModalOpen(true)} />
+        <OrdersTable orders={ordersByPeriod} onAddClick={() => setIsAddModalOpen(true)} />
 
         {/* Modale ajout */}
         <AddSaleModal

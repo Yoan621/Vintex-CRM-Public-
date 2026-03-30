@@ -4,8 +4,7 @@ import { useState, useCallback } from 'react'
 import Modal from '@/components/ui/Modal'
 import Button from '@/components/ui/Button'
 import { Upload, Calculator } from 'lucide-react'
-import { Order, OrderStatus, Carrier } from '@/lib/types'
-import { calculateProfit } from '@/lib/utils'
+import { OrderStatus, Carrier } from '@/lib/types'
 
 interface AddSaleModalProps {
   isOpen: boolean
@@ -18,6 +17,7 @@ export interface SaleFormData {
   articleName: string
   brandName: string
   vintedAccount: string
+  platform: 'vinted' | 'leboncoin' | 'ebay' | 'facebook' | 'autre'
   status: OrderStatus
   saleDate: string
   purchasePrice: number
@@ -38,6 +38,7 @@ export default function AddSaleModal({ isOpen, onClose, onAdd }: AddSaleModalPro
     articleName: '',
     brandName: '',
     vintedAccount: '',
+    platform: 'vinted',
     status: 'non_traite',
     saleDate: new Date().toISOString().split('T')[0],
     purchasePrice: 0,
@@ -127,6 +128,7 @@ export default function AddSaleModal({ isOpen, onClose, onAdd }: AddSaleModalPro
       articleName: '',
       brandName: '',
       vintedAccount: '',
+      platform: 'vinted',
       status: 'non_traite',
       saleDate: new Date().toISOString().split('T')[0],
       purchasePrice: 0,
@@ -198,7 +200,7 @@ export default function AddSaleModal({ isOpen, onClose, onAdd }: AddSaleModalPro
           {/* Compte Vinted */}
           <div>
             <label className="block text-sm font-medium text-secondary/80 mb-1">
-              Compte Vinted <span className="text-red-500">*</span>
+              Compte vendeur <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -212,6 +214,24 @@ export default function AddSaleModal({ isOpen, onClose, onAdd }: AddSaleModalPro
             {errors.vintedAccount && (
               <p className="text-red-500 text-xs mt-1">{errors.vintedAccount}</p>
             )}
+          </div>
+
+          {/* Plateforme */}
+          <div>
+            <label className="block text-sm font-medium text-secondary/80 mb-1">
+              Plateforme <span className="text-red-500">*</span>
+            </label>
+            <select
+              value={formData.platform}
+              onChange={(e) => handleChange('platform', e.target.value)}
+              className="w-full px-3 py-2 bg-[#18181b] border border-[#27272a] rounded-lg focus:ring-2 focus:ring-primary/40 focus:border-transparent text-white"
+            >
+              <option value="vinted">Vinted</option>
+              <option value="leboncoin">LeBonCoin</option>
+              <option value="ebay">eBay</option>
+              <option value="facebook">Facebook Marketplace</option>
+              <option value="autre">Autre</option>
+            </select>
           </div>
 
           {/* Nom article */}

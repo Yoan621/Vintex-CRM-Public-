@@ -18,6 +18,10 @@
   --shadow-large: 0 8px 32px rgba(0, 60, 243, 0.16);
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   color: var(--foreground);
   background: var(--background);

@@ -49,20 +49,20 @@ export default function Modal({ isOpen, onClose, title, children, size = 'lg' }:
       aria-labelledby="modal-title"
     >
       <div
-        className={`bg-white rounded-2xl shadow-soft-lg w-full ${sizeClasses[size]} max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-300`}
+        className={`bg-[#27272A] rounded-2xl shadow-soft-lg w-full ${sizeClasses[size]} max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-300`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b border-gray-100 px-6 py-5 flex items-center justify-between rounded-t-2xl">
-          <h2 id="modal-title" className="text-2xl font-heading text-gray-900">
+        <div className="sticky top-0 bg-[#27272A] border-b border-[#1A1A1A] px-6 py-5 flex items-center justify-between rounded-t-2xl">
+          <h2 id="modal-title" className="text-2xl font-heading text-white">
             {title}
           </h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-grayLight rounded-lg transition-all duration-200"
+            className="p-2 hover:bg-[#18181b] rounded-lg transition-all duration-200"
             aria-label="Fermer"
           >
-            <X className="w-5 h-5 text-gray-500" />
+            <X className="w-5 h-5 text-secondary/60 hover:text-secondary" />
           </button>
         </div>
 

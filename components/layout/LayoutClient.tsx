@@ -9,17 +9,21 @@ interface LayoutClientProps {
 }
 
 function LayoutContent({ children }: LayoutClientProps) {
-  const { isSidebarOpen } = useSidebar()
+  const { isSidebarOpen, isCollapsed } = useSidebar()
   const pathname = usePathname()
   const isLanding = pathname === '/'
 
+  // Calculer la marge gauche en fonction de l'état de la sidebar
+  const getMarginLeft = () => {
+    if (!isSidebarOpen || isLanding) return 'ml-0'
+    return isCollapsed ? 'ml-20' : 'ml-60'
+  }
+
   return (
-    <div className="flex min-h-screen">
+    <div className="min-h-screen">
       <Sidebar />
       <main
-        className={`flex-1 bg-[#1a1f23] min-h-screen transition-all duration-300 ${
-          isSidebarOpen && !isLanding ? 'ml-60' : 'ml-0'
-        }`}
+        className={`bg-[#1a1f23] min-h-screen transition-all duration-300 ${getMarginLeft()}`}
       >
         {children}
       </main>

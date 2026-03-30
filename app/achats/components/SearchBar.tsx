@@ -1,6 +1,6 @@
 'use client'
 
-import { Search, Plus, Package } from 'lucide-react'
+import { Search, Plus, Package, Layers } from 'lucide-react'
 import { Plateforme, StatutAchat } from '@/types/achat'
 import Button from '@/components/ui/Button'
 
@@ -12,6 +12,7 @@ interface SearchBarProps {
   plateformeFilter: Plateforme | 'toutes'
   onPlateformeChange: (plateforme: Plateforme | 'toutes') => void
   onAddClick: () => void
+  onAddLotClick?: () => void
   onAddToStockClick?: () => void
 }
 
@@ -27,6 +28,7 @@ export default function SearchBar({
   plateformeFilter,
   onPlateformeChange,
   onAddClick,
+  onAddLotClick,
   onAddToStockClick
 }: SearchBarProps) {
   return (
@@ -81,6 +83,14 @@ export default function SearchBar({
           <Button onClick={onAddToStockClick} variant="secondary">
             <Package className="w-5 h-5" />
             <span className="hidden sm:inline">Ajouter au stock</span>
+          </Button>
+        )}
+
+        {/* Bouton Ajouter un lot */}
+        {onAddLotClick && (
+          <Button onClick={onAddLotClick} variant="secondary">
+            <Layers className="w-5 h-5" />
+            <span className="hidden sm:inline">Ajouter un lot</span>
           </Button>
         )}
 

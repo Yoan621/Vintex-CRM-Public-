@@ -20,7 +20,7 @@ export default function Button({
 
   const variantClasses = {
     primary: 'bg-primary text-white hover:bg-[#0052CC] hover:shadow-[0_4px_12px_rgba(0,102,255,0.3)] active:scale-[0.98] shadow-soft',
-    secondary: 'bg-cyan text-white hover:bg-[#00C4E6] hover:shadow-[0_4px_12px_rgba(0,217,255,0.3)] active:scale-[0.98] shadow-soft',
+    secondary: 'bg-cyan text-white hover:bg-[#003CF3] hover:shadow-[0_4px_12px_rgba(0,60,243,0.3)] active:scale-[0.98] shadow-soft',
     outline: 'border-2 border-black bg-transparent text-black hover:bg-cyan hover:border-cyan hover:text-white active:scale-[0.98]',
     ghost: 'text-grayDark hover:bg-grayLight active:bg-grayMedium',
     destructive: 'bg-red-600 text-white hover:bg-red-700 active:scale-[0.98] shadow-soft'

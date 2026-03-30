@@ -2,19 +2,23 @@
 
 import { useState, useMemo, useEffect } from 'react'
 import {
-  Download,
   Search,
   ChevronUp,
   ChevronDown,
-  Edit,
-  Trash2,
-  Eye,
-  Image as ImageIcon,
   ChevronLeft,
   ChevronRight,
   X,
   Package,
   Plus,
+  MoreVertical,
+  ExternalLink,
+  FileText,
+  MessageSquare,
+  Clock,
+  CheckCircle,
+  Truck,
+  AlertCircle,
+  XCircle,
 } from 'lucide-react'
 import type { Order } from '@/lib/types'
 import {
@@ -33,10 +37,6 @@ interface SalesTableProps {
 type SortKey = 'transactionNumber' | 'articleName' | 'status' | 'saleDate' | 'salePrice' | 'profit'
 type SortDirection = 'asc' | 'desc'
 
-/**
- * Composant de tableau des ventes avec recherche améliorée, tri et pagination
- * Design harmonisé avec le Dashboard
- */
 export default function SalesTable({ orders, onAddClick }: SalesTableProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('')
@@ -45,44 +45,32 @@ export default function SalesTable({ orders, onAddClick }: SalesTableProps) {
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 10
 
-  // Debounce du terme de recherche (300ms)
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm)
     }, 300)
-
     return () => clearTimeout(timer)
   }, [searchTerm])
 
-  // Fonction de recherche globale (inspirée du Dashboard)
   const searchInOrder = (order: Order, term: string): boolean => {
     if (!term || term.length < 2) return true
-
-    const searchLower = term.toLowerCase()
-
-    // Recherche dans tous les champs pertinents
+    const s = term.toLowerCase()
     return (
-      (order.articleName?.toLowerCase().includes(searchLower) ?? false) ||
-      (order.brandName?.toLowerCase().includes(searchLower) ?? false) ||
-      (order.transactionNumber?.toLowerCase().includes(searchLower) ?? false) ||
-      (order.customerName?.toLowerCase().includes(searchLower) ?? false) ||
-      (order.vintedAccount?.toLowerCase().includes(searchLower) ?? false) ||
-      (order.trackingNumber?.toLowerCase().includes(searchLower) ?? false)
+      (order.articleName?.toLowerCase().includes(s) ?? false) ||
+      (order.brandName?.toLowerCase().includes(s) ?? false) ||
+      (order.transactionNumber?.toLowerCase().includes(s) ?? false) ||
+      (order.customerName?.toLowerCase().includes(s) ?? false) ||
+      (order.vintedAccount?.toLowerCase().includes(s) ?? false) ||
+      (order.trackingNumber?.toLowerCase().includes(s) ?? false)
     )
   }
 
-  // Filtrage et tri des données
   const filteredAndSortedOrders = useMemo(() => {
     let result = [...orders]
-
-    // Recherche avec debounce
     result = result.filter(order => searchInOrder(order, debouncedSearchTerm))
-
-    // Tri
     result.sort((a, b) => {
-      let aValue: any
-      let bValue: any
-
+      let aValue: unknown
+      let bValue: unknown
       if (sortKey === 'profit') {
         aValue = calculateProfit(a)
         bValue = calculateProfit(b)
@@ -93,22 +81,17 @@ export default function SalesTable({ orders, onAddClick }: SalesTableProps) {
         aValue = a[sortKey]
         bValue = b[sortKey]
       }
-
       if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1
       if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1
       return 0
     })
-
     return result
   }, [orders, debouncedSearchTerm, sortKey, sortDirection])
 
-  // Pagination
   const totalPages = Math.ceil(filteredAndSortedOrders.length / itemsPerPage)
   const startIndex = (currentPage - 1) * itemsPerPage
-  const endIndex = startIndex + itemsPerPage
-  const currentOrders = filteredAndSortedOrders.slice(startIndex, endIndex)
+  const currentOrders = filteredAndSortedOrders.slice(startIndex, startIndex + itemsPerPage)
 
-  // Gestion du tri
   const handleSort = (key: SortKey) => {
     if (sortKey === key) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
@@ -118,35 +101,78 @@ export default function SalesTable({ orders, onAddClick }: SalesTableProps) {
     }
   }
 
-  // Icône de tri
   const SortIcon = ({ columnKey }: { columnKey: SortKey }) => {
     if (sortKey !== columnKey) return null
-    return sortDirection === 'asc' ? (
-      <ChevronUp className="w-4 h-4" />
-    ) : (
-      <ChevronDown className="w-4 h-4" />
-    )
+    return sortDirection === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />
   }
 
   const isSearchActive = debouncedSearchTerm && debouncedSearchTerm.length >= 2
 
+  /**
+   * Fonction locale pour les couleurs de statut (identique à OrdersTable)
+   */
+  const getDashboardStatusColor = (status: Order['status']): string => {
+    switch (status) {
+      case 'non_traite':
+        return 'bg-[#E9E9E9]/10 text-[#E9E9E9] border border-[#E9E9E9]/20'
+      case 'validée':
+        return 'bg-[#00D98E]/10 text-[#00D98E] border border-[#00D98E]/20'
+      case 'en_cours':
+        return 'bg-[#0066FF]/10 text-[#0066FF] border border-[#0066FF]/20'
+      case 'litige':
+        return 'bg-[#FF9500]/10 text-[#FF9500] border border-[#FF9500]/20'
+      case 'annulée':
+        return 'bg-[#FF0000]/10 text-[#FF0000] border border-[#FF0000]/20'
+      default:
+        return 'bg-secondary/10 text-secondary border border-secondary/20'
+    }
+  }
+
+  /**
+   * Fonction pour obtenir l'icône correspondant au statut
+   */
+  const getStatusIconComponent = (status: Order['status']) => {
+    const iconProps = { className: "w-3 h-3" }
+    switch (status) {
+      case 'non_traite':
+        return <Clock {...iconProps} />
+      case 'validée':
+        return <CheckCircle {...iconProps} />
+      case 'en_cours':
+        return <Truck {...iconProps} />
+      case 'litige':
+        return <AlertCircle {...iconProps} />
+      case 'annulée':
+        return <XCircle {...iconProps} />
+      default:
+        return <Clock {...iconProps} />
+    }
+  }
+
+  // Status badge helper — identique à OrdersTable avec icônes
+  const StatusBadge = ({ status }: { status: Order['status'] }) => {
+    const label = getStatusLabel(status)
+    const colorClass = getDashboardStatusColor(status)
+    const icon = getStatusIconComponent(status)
+    return (
+      <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${colorClass}`}>
+        {icon}
+        {label}
+      </span>
+    )
+  }
+
   return (
     <div className="bg-[#0E0E0E] rounded-xl border border-[#1A1A1A] overflow-hidden">
-      {/* En-tête avec recherche */}
+      {/* Header avec recherche */}
       <div className="border-b border-[#1A1A1A]">
         <div className="flex items-center justify-between px-7 py-5">
           <h2 className="text-[18px] font-semibold text-secondary tracking-tight">
             Toutes les ventes
           </h2>
-
-          {/* Barre de recherche améliorée + Bouton */}
           <div className="flex items-center gap-3">
             {onAddClick && (
-              <Button
-                variant="primary"
-                onClick={onAddClick}
-                className="flex items-center gap-2"
-              >
+              <Button variant="primary" onClick={onAddClick} className="flex items-center gap-2">
                 <Plus size={18} />
                 Ajouter une vente
               </Button>
@@ -158,127 +184,76 @@ export default function SalesTable({ orders, onAddClick }: SalesTableProps) {
                   type="text"
                   placeholder="Rechercher : article, marque, n° commande, client, compte…"
                   value={searchTerm}
-                  onChange={(e) => {
-                    setSearchTerm(e.target.value)
-                    setCurrentPage(1)
-                  }}
+                  onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1) }}
                   className="w-full h-10 pl-10 pr-10 bg-[#18181b] border border-[#27272a] rounded-[10px] text-[14px] text-white placeholder:text-secondary/40 focus:outline-none focus:border-primary/40 transition-colors"
                 />
                 {searchTerm && (
                   <button
-                    onClick={() => {
-                      setSearchTerm('')
-                      setCurrentPage(1)
-                    }}
+                    onClick={() => { setSearchTerm(''); setCurrentPage(1) }}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary/40 hover:text-secondary transition-colors"
-                    title="Réinitialiser la recherche"
+                    title="Réinitialiser"
                   >
                     <X size={16} />
                   </button>
                 )}
               </div>
               {isSearchActive && (
-                <div className="flex items-center gap-2">
-                  <p className="text-[12px] text-secondary/60">
-                    {filteredAndSortedOrders.length} résultat{filteredAndSortedOrders.length > 1 ? 's' : ''} trouvé{filteredAndSortedOrders.length > 1 ? 's' : ''}
-                  </p>
-                </div>
+                <p className="text-[12px] text-secondary/60">
+                  {filteredAndSortedOrders.length} résultat{filteredAndSortedOrders.length > 1 ? 's' : ''} trouvé{filteredAndSortedOrders.length > 1 ? 's' : ''}
+                </p>
               )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Tableau */}
-      <div className="overflow-x-auto">
+      {/* Version Desktop */}
+      <div className="hidden lg:block overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-black/40">
+          <thead className="bg-[#0E0E0E] border-b border-[#1A1A1A]">
             <tr>
-              <th
-                onClick={() => handleSort('transactionNumber')}
-                className="px-6 py-4 text-left text-[13px] font-medium text-secondary/60 tracking-tight cursor-pointer hover:bg-primary/5 transition-colors"
-              >
-                <div className="flex items-center gap-2">
-                  N° Transaction
-                  <SortIcon columnKey="transactionNumber" />
-                </div>
-              </th>
-              <th
-                onClick={() => handleSort('articleName')}
-                className="px-6 py-4 text-left text-[13px] font-medium text-secondary/60 tracking-tight cursor-pointer hover:bg-primary/5 transition-colors"
-              >
-                <div className="flex items-center gap-2">
-                  Article
-                  <SortIcon columnKey="articleName" />
-                </div>
-              </th>
-              <th className="px-6 py-4 text-left text-[13px] font-medium text-secondary/60 tracking-tight">
-                Marque
-              </th>
-              <th className="px-6 py-4 text-left text-[13px] font-medium text-secondary/60 tracking-tight">
-                Compte
-              </th>
-              <th
-                onClick={() => handleSort('status')}
-                className="px-6 py-4 text-left text-[13px] font-medium text-secondary/60 tracking-tight cursor-pointer hover:bg-primary/5 transition-colors"
-              >
-                <div className="flex items-center gap-2">
-                  Statut
-                  <SortIcon columnKey="status" />
-                </div>
-              </th>
-              <th className="px-6 py-4 text-left text-[13px] font-medium text-secondary/60 tracking-tight">
-                Prix achat
-              </th>
-              <th
-                onClick={() => handleSort('salePrice')}
-                className="px-6 py-4 text-left text-[13px] font-medium text-secondary/60 tracking-tight cursor-pointer hover:bg-primary/5 transition-colors"
-              >
-                <div className="flex items-center gap-2">
-                  Prix vente
-                  <SortIcon columnKey="salePrice" />
-                </div>
-              </th>
-              <th
-                onClick={() => handleSort('profit')}
-                className="px-6 py-4 text-left text-[13px] font-medium text-secondary/60 tracking-tight cursor-pointer hover:bg-primary/5 transition-colors"
-              >
-                <div className="flex items-center gap-2">
-                  Bénéfice
-                  <SortIcon columnKey="profit" />
-                </div>
-              </th>
-              <th className="px-6 py-4 text-left text-[13px] font-medium text-secondary/60 tracking-tight">
-                N° suivi
-              </th>
-              <th className="px-6 py-4 text-left text-[13px] font-medium text-secondary/60 tracking-tight">
-                Client
-              </th>
-              <th className="px-6 py-4 text-left text-[13px] font-medium text-secondary/60 tracking-tight">
-                Actions
-              </th>
+              {([
+                { key: 'transactionNumber' as SortKey, label: 'N° Transaction', sortable: true },
+                { key: 'articleName' as SortKey, label: 'Article', sortable: true },
+                { key: null, label: 'Marque', sortable: false },
+                { key: null, label: 'Compte', sortable: false },
+                { key: 'status' as SortKey, label: 'Statut', sortable: true },
+                { key: null, label: 'Prix achat', sortable: false },
+                { key: 'salePrice' as SortKey, label: 'Prix vente', sortable: true },
+                { key: 'profit' as SortKey, label: 'Bénéfice', sortable: true },
+                { key: null, label: 'N° suivi', sortable: false },
+                { key: null, label: 'Client', sortable: false },
+                { key: null, label: 'Bordereaux', sortable: false },
+                { key: null, label: 'Actions', sortable: false },
+              ]).map((col, i) => (
+                <th
+                  key={i}
+                  onClick={() => col.sortable && col.key && handleSort(col.key)}
+                  className={`px-6 py-3 text-left text-xs font-medium text-secondary/60 uppercase tracking-wider ${col.sortable ? 'cursor-pointer hover:bg-primary/5' : ''} transition-colors`}
+                >
+                  {col.sortable && col.key ? (
+                    <div className="flex items-center gap-2">
+                      {col.label}
+                      <SortIcon columnKey={col.key} />
+                    </div>
+                  ) : col.label}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody className="bg-[#0E0E0E] divide-y divide-[#1A1A1A]">
             {filteredAndSortedOrders.length === 0 ? (
               <tr>
-                <td colSpan={11} className="px-6 py-12 text-center">
+                <td colSpan={12} className="px-6 py-12 text-center">
                   {isSearchActive ? (
                     <>
                       <Search className="w-12 h-12 mx-auto text-secondary/40 mb-4" />
-                      <p className="text-secondary/60 mb-2">
-                        Aucun résultat pour "{debouncedSearchTerm}"
-                      </p>
-                      <p className="text-secondary/40 text-[13px]">
-                        Essayez avec d'autres mots-clés
-                      </p>
+                      <p className="text-secondary/60">Aucun résultat pour &quot;{debouncedSearchTerm}&quot;</p>
                     </>
                   ) : (
                     <>
                       <Package className="w-12 h-12 mx-auto text-secondary/40 mb-4" />
-                      <p className="text-secondary/60">
-                        Aucune vente à afficher
-                      </p>
+                      <p className="text-secondary/60">Aucune vente à afficher</p>
                     </>
                   )}
                 </td>
@@ -287,93 +262,69 @@ export default function SalesTable({ orders, onAddClick }: SalesTableProps) {
               currentOrders.map((order) => {
                 const profit = calculateProfit(order)
                 const isProfit = profit > 0
-
                 return (
-                  <tr
-                    key={order.id}
-                    className="hover:bg-primary/5 transition-[background-color] duration-150 ease-in-out"
-                  >
-                    <td className="px-6 py-4 whitespace-nowrap text-[13px] font-medium text-primary">
-                      {order.transactionNumber}
+                  <tr key={order.id} className="hover:bg-[#1A1A1A]/50 transition-colors border-b border-[#1A1A1A]">
+                    <td className="px-6 py-4">
+                      <button className="text-primary hover:text-primary/80 font-medium hover:underline">
+                        {order.transactionNumber}
+                      </button>
                     </td>
-                    <td className="px-6 py-4 text-[13px] text-secondary">
-                      <span className="font-medium">{order.articleName}</span>
+                    <td className="px-6 py-4">
+                      <div className="flex flex-col">
+                        <span className="font-medium text-secondary">{order.articleName}</span>
+                        <span className="text-sm text-secondary/60">{order.brandName || '-'}</span>
+                      </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-[13px] text-secondary/80">
-                      {order.brandName || '-'}
+                    <td className="px-6 py-4 text-secondary/80 text-sm">{order.brandName || '-'}</td>
+                    <td className="px-6 py-4 text-secondary/80 text-sm">{order.vintedAccount || '-'}</td>
+                    <td className="px-6 py-4">
+                      <StatusBadge status={order.status} />
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-[13px] text-secondary/80">
-                      {order.vintedAccount || '-'}
+                    <td className="px-6 py-4">
+                      <input
+                        type="number"
+                        step="0.01"
+                        defaultValue={order.purchasePrice}
+                        className="w-20 px-2 py-1 bg-[#18181b] border border-[#27272a] rounded text-secondary text-sm focus:outline-none focus:border-primary/40"
+                        placeholder="0.00"
+                      />
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`px-3 py-1.5 inline-flex text-[12px] leading-5 font-medium rounded-md tracking-tight ${getStatusColor(
-                          order.status
-                        )}`}
-                      >
-                        {getStatusLabel(order.status)}
-                      </span>
+                    <td className="px-6 py-4">
+                      <span className="font-bold text-secondary">{formatCurrency(order.salePrice)}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-[13px] text-secondary/80">
-                      {formatCurrency(order.purchasePrice)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-[13px] font-semibold text-secondary">
-                      {formatCurrency(order.salePrice)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-[13px]">
-                      <span
-                        className={`font-semibold ${
-                          isProfit
-                            ? 'text-[#00D98E]'
-                            : 'text-red-500'
-                        }`}
-                      >
+                    <td className="px-6 py-4">
+                      <span className={`font-semibold ${isProfit ? 'text-[#00D98E]' : 'text-red-500'}`}>
                         {formatCurrency(profit)}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-[13px] text-secondary/60 font-mono">
-                      {order.trackingNumber || '-'}
+                    <td className="px-6 py-4">
+                      {order.trackingNumber ? (
+                        <span className="inline-flex items-center gap-1 text-info hover:text-info/80 hover:underline text-sm cursor-pointer">
+                          {order.trackingNumber}
+                          <ExternalLink className="w-3 h-3" />
+                        </span>
+                      ) : (
+                        <span className="text-secondary/40 text-sm">-</span>
+                      )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-[13px] text-secondary/80">
-                      {order.customerName}
+                    <td className="px-6 py-4 text-secondary/80 text-sm">{order.customerName || '-'}</td>
+                    <td className="px-6 py-4">
+                      <button
+                        className="p-2 hover:bg-primary/10 rounded-lg transition-colors text-primary hover:text-primary/80"
+                        aria-label="Générer bordereau"
+                        title="Générer bordereau"
+                      >
+                        <FileText className="w-5 h-5" />
+                      </button>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-[13px]">
-                      <div className="flex items-center gap-2">
-                        <button
-                          className="p-2 text-secondary/60 hover:text-primary hover:bg-primary/10 rounded-lg transition-all duration-150"
-                          title="Voir les détails"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        {order.invoice && (
-                          <button
-                            className="p-2 text-secondary/60 hover:text-[#00D98E] hover:bg-[#00D98E]/10 rounded-lg transition-all duration-150"
-                            title="Télécharger la facture"
-                          >
-                            <Download className="w-4 h-4" />
-                          </button>
-                        )}
-                        {order.articleImage && (
-                          <button
-                            className="p-2 text-secondary/60 hover:text-primary hover:bg-primary/10 rounded-lg transition-all duration-150"
-                            title="Voir l'article"
-                          >
-                            <ImageIcon className="w-4 h-4" />
-                          </button>
-                        )}
-                        <button
-                          className="p-2 text-secondary/60 hover:text-[#FF9500] hover:bg-[#FF9500]/10 rounded-lg transition-all duration-150"
-                          title="Éditer"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </button>
-                        <button
-                          className="p-2 text-secondary/60 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all duration-150"
-                          title="Supprimer"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
+                    <td className="px-6 py-4">
+                      <button
+                        className="p-2 hover:bg-primary/10 rounded-lg transition-colors text-secondary/60 hover:text-primary"
+                        aria-label="Accéder à la conversation"
+                        title="Accéder à la conversation"
+                      >
+                        <MessageSquare className="w-5 h-5" />
+                      </button>
                     </td>
                   </tr>
                 )
@@ -383,7 +334,73 @@ export default function SalesTable({ orders, onAddClick }: SalesTableProps) {
         </table>
       </div>
 
-      {/* Pagination harmonisée */}
+      {/* Version Mobile — Cards */}
+      <div className="lg:hidden p-4 space-y-3">
+        {filteredAndSortedOrders.length === 0 ? (
+          <div className="px-6 py-12 text-center">
+            <Package className="w-12 h-12 mx-auto text-secondary/40 mb-4" />
+            <p className="text-secondary/60">
+              {isSearchActive ? 'Aucun résultat à afficher' : 'Aucune vente à afficher'}
+            </p>
+          </div>
+        ) : (
+          currentOrders.map((order) => {
+            const profit = calculateProfit(order)
+            const isProfit = profit > 0
+            return (
+              <div key={order.id} className="bg-[#0E0E0E] rounded-lg border border-[#1A1A1A] p-4 mb-3 hover:border-primary/40 transition-all">
+                <div className="flex justify-between items-start mb-3">
+                  <button className="text-primary hover:text-primary/80 font-medium hover:underline">
+                    {order.transactionNumber}
+                  </button>
+                  <div className="relative">
+                    <button className="p-2 hover:bg-[#1A1A1A] rounded-lg transition-colors" aria-label="Actions">
+                      <MoreVertical className="w-5 h-5 text-secondary/60" />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div>
+                    <p className="font-medium text-secondary">{order.articleName}</p>
+                    <p className="text-sm text-secondary/60">{order.brandName || '-'} • {order.vintedAccount || '-'}</p>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    <StatusBadge status={order.status} />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 text-sm pt-2 border-t border-[#1A1A1A]">
+                    <div>
+                      <span className="text-secondary/60">Achat:</span>
+                      <span className="ml-1 text-secondary">{formatCurrency(order.purchasePrice)}</span>
+                    </div>
+                    <div>
+                      <span className="text-secondary/60">Vente:</span>
+                      <span className="ml-1 text-secondary">{formatCurrency(order.salePrice)}</span>
+                    </div>
+                    <div className="col-span-2">
+                      <span className="text-secondary/60">Bénéfice:</span>
+                      <span className={`ml-1 font-bold ${isProfit ? 'text-[#00D98E]' : 'text-red-500'}`}>
+                        {formatCurrency(profit)}
+                      </span>
+                    </div>
+                  </div>
+
+                  {order.trackingNumber && (
+                    <span className="inline-flex items-center gap-1 text-info hover:text-info/80 hover:underline text-sm cursor-pointer">
+                      Suivi: {order.trackingNumber}
+                      <ExternalLink className="w-3 h-3" />
+                    </span>
+                  )}
+                </div>
+              </div>
+            )
+          })
+        )}
+      </div>
+
+      {/* Pagination */}
       {totalPages > 1 && (
         <div className="px-6 py-4 border-t border-[#1A1A1A]">
           <div className="flex items-center justify-between">

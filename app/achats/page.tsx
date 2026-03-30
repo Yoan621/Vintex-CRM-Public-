@@ -12,6 +12,7 @@ import AddAchatModal from './components/AddAchatModal'
 import EditAchatModal from './components/EditAchatModal'
 import DetailAchatModal from './components/DetailAchatModal'
 import AddToStockModal from './components/AddToStockModal'
+import AjouterLotModal from './components/AjouterLotModal'
 import DashboardHeader from '@/components/dashboard/DashboardHeader'
 import { TimePeriod } from '@/components/shared/TimeFilter'
 import { AccountOption } from '@/components/dashboard/AccountSelector'
@@ -38,6 +39,7 @@ export default function AchatsPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
   const [isAddToStockModalOpen, setIsAddToStockModalOpen] = useState(false)
+  const [isAddLotModalOpen, setIsAddLotModalOpen] = useState(false)
   const [selectedAchat, setSelectedAchat] = useState<Achat | null>(null)
 
   // Récupérer la liste des comptes Vinted depuis le système de gestion des comptes
@@ -185,6 +187,50 @@ export default function AchatsPage() {
     console.log(`✅ ${articlesAjoutes.length} article(s) ajouté(s) au stock`)
   }
 
+  // Handler: Ajouter un lot d'achats
+  const handleAddLot = (data: any) => {
+    // TODO: Connecter à l'API pour créer plusieurs achats à partir du lot
+    console.log('Lot ajouté (mode démo):', data)
+
+    // Calculer le prix par article
+    const prixParArticle = parseFloat(data.prixTotal) / parseInt(data.nombreArticles)
+
+    // Créer les achats individuels
+    const newAchats: Achat[] = []
+    for (let i = 1; i <= parseInt(data.nombreArticles); i++) {
+      const sku = data.sku || `${data.nomLot.toUpperCase().replace(/\s+/g, '_')}`
+      const skuFinal = data.memeSkuPourTous ? sku : `${sku}${i.toString().padStart(4, '0')}`
+
+      const newAchat: Achat = {
+        id: Math.random().toString(36).substring(2, 11),
+        numeroTransaction: skuFinal,
+        nomArticle: data.nomLot,
+        marque: data.nomLot,
+        taille: '-',
+        prixAchat: prixParArticle,
+        fraisPort: 0,
+        coutTotal: prixParArticle,
+        dateAchat: data.dateAchat,
+        plateforme: data.fournisseur as Plateforme,
+        vendeur: data.fournisseur,
+        compteVinted: uniqueAccounts[0] || '@compte1',
+        statut: 'en_attente',
+        numeroSuivi: undefined,
+        prixReventePrevu: undefined,
+        margeEstimee: 0,
+        notes: data.notesInternes,
+        photo: undefined,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }
+      newAchats.push(newAchat)
+    }
+
+    // Ajouter tous les achats
+    setAchats([...newAchats, ...achats])
+    console.log(`✅ ${newAchats.length} article(s) créé(s) depuis le lot`)
+  }
+
   const hasActiveFilters = searchQuery !== '' || statutFilter !== 'tous' || plateformeFilter !== 'toutes'
 
   return (
@@ -215,6 +261,7 @@ export default function AchatsPage() {
             plateformeFilter={plateformeFilter}
             onPlateformeChange={setPlateformeFilter}
             onAddClick={() => setIsAddModalOpen(true)}
+            onAddLotClick={() => setIsAddLotModalOpen(true)}
             onAddToStockClick={() => setIsAddToStockModalOpen(true)}
           />
         </div>
@@ -264,6 +311,13 @@ export default function AchatsPage() {
           onClose={() => setIsAddToStockModalOpen(false)}
           achats={achats}
           onAddToStock={handleAddMultipleToStock}
+        />
+
+        {/* Modale ajout d'un lot */}
+        <AjouterLotModal
+          isOpen={isAddLotModalOpen}
+          onClose={() => setIsAddLotModalOpen(false)}
+          onSubmit={handleAddLot}
         />
       </div>
     </div>

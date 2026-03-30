@@ -1,96 +1,157 @@
 import type { Boost } from '@/lib/types'
 
+const daysAgo = (n: number): Date => {
+  const d = new Date()
+  d.setDate(d.getDate() - n)
+  return d
+}
+
+const daysFromNow = (n: number): Date => {
+  const d = new Date()
+  d.setDate(d.getDate() + n)
+  return d
+}
+
 /**
  * Données de démonstration pour les boosts Vinted
+ * Dates dynamiques relatives à aujourd'hui
  */
 export const mockBoosts: Boost[] = [
+  // ──── Actifs (en cours) ────
   {
     id: '1',
-    date: new Date('2025-01-15'),
-    article: "Jean Levi's 501",
-    prix: 0.95,
+    date: daysAgo(1),
+    article: "Jordan 1 Retro High OG",
+    prix: 1.95,
     status: 'actif',
-    dateExpiration: new Date('2025-01-18'),
-    duration: '3j',
+    dateExpiration: daysFromNow(6),
+    duration: '7j',
   },
   {
     id: '2',
-    date: new Date('2025-01-14'),
-    article: 'Nike Air Max',
+    date: daysAgo(2),
+    article: 'Canada Goose Parka Expedition',
     prix: 1.95,
     status: 'actif',
-    dateExpiration: new Date('2025-01-21'),
+    dateExpiration: daysFromNow(5),
     duration: '7j',
   },
   {
     id: '3',
-    date: new Date('2025-01-10'),
-    article: 'Veste Zara',
+    date: daysAgo(3),
+    article: 'Nike Air Max 90 Triple White',
     prix: 0.95,
-    status: 'expiré',
-    dateExpiration: new Date('2025-01-13'),
+    status: 'actif',
+    dateExpiration: daysFromNow(0),
     duration: '3j',
   },
   {
     id: '4',
-    date: new Date('2025-01-08'),
+    date: daysAgo(4),
+    article: 'Balenciaga Triple S',
+    prix: 0.95,
+    status: 'actif',
+    dateExpiration: daysFromNow(2),
+    duration: '3j',
+  },
+  // ──── Expirés ce mois ────
+  {
+    id: '5',
+    date: daysAgo(6),
+    article: "Levi's 501 Jean Vintage",
+    prix: 0.95,
+    status: 'expiré',
+    dateExpiration: daysAgo(3),
+    duration: '3j',
+  },
+  {
+    id: '6',
+    date: daysAgo(9),
+    article: 'The North Face Nuptse 700',
+    prix: 1.95,
+    status: 'expiré',
+    dateExpiration: daysAgo(2),
+    duration: '7j',
+  },
+  {
+    id: '7',
+    date: daysAgo(12),
+    article: 'Adidas Stan Smith Vert',
+    prix: 0.95,
+    status: 'expiré',
+    dateExpiration: daysAgo(9),
+    duration: '3j',
+  },
+  {
+    id: '8',
+    date: daysAgo(14),
+    article: 'Moncler Doudoune Maya',
+    prix: 1.95,
+    status: 'expiré',
+    dateExpiration: daysAgo(7),
+    duration: '7j',
+  },
+  {
+    id: '9',
+    date: daysAgo(18),
+    article: 'Vans Old Skool Checkerboard',
+    prix: 0.95,
+    status: 'expiré',
+    dateExpiration: daysAgo(15),
+    duration: '3j',
+  },
+  // ──── Annulés ────
+  {
+    id: '10',
+    date: daysAgo(20),
     article: 'Sac à main Guess',
     prix: 1.95,
     status: 'annulé',
     duration: '7j',
   },
   {
-    id: '5',
-    date: new Date('2025-01-05'),
-    article: 'Pull H&M',
+    id: '11',
+    date: daysAgo(22),
+    article: 'Pull H&M Oversize',
     prix: 0.95,
-    status: 'expiré',
-    dateExpiration: new Date('2025-01-08'),
+    status: 'annulé',
     duration: '3j',
   },
+  // ──── Mois précédent ────
   {
-    id: '6',
-    date: new Date('2025-01-03'),
-    article: 'Chaussures Adidas',
-    prix: 1.95,
-    status: 'expiré',
-    dateExpiration: new Date('2025-01-10'),
-    duration: '7j',
-  },
-  {
-    id: '7',
-    date: new Date('2024-12-28'),
+    id: '12',
+    date: daysAgo(35),
     article: 'Manteau The North Face',
     prix: 1.95,
     status: 'expiré',
-    dateExpiration: new Date('2025-01-04'),
+    dateExpiration: daysAgo(28),
     duration: '7j',
   },
   {
-    id: '8',
-    date: new Date('2024-12-25'),
-    article: 'Robe Mango',
+    id: '13',
+    date: daysAgo(38),
+    article: 'Robe Mango Fleurie',
     prix: 0.95,
     status: 'expiré',
-    dateExpiration: new Date('2024-12-28'),
+    dateExpiration: daysAgo(35),
     duration: '3j',
   },
   {
-    id: '9',
-    date: new Date('2024-12-20'),
-    article: 'Baskets Vans',
+    id: '14',
+    date: daysAgo(42),
+    article: 'Baskets Vans Sk8-Hi',
     prix: 0.95,
     status: 'expiré',
-    dateExpiration: new Date('2024-12-23'),
+    dateExpiration: daysAgo(39),
     duration: '3j',
   },
   {
-    id: '10',
-    date: new Date('2024-12-18'),
-    article: 'Pantalon Zara',
+    id: '15',
+    date: daysAgo(45),
+    article: 'Pantalon Zara Slim',
     prix: 1.95,
     status: 'expiré',
-    dateExpiration: new Date('2024-12-25'),
+    dateExpiration: daysAgo(38),
     duration: '7j',
   },
 ]

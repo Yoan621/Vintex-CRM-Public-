@@ -1,12 +1,14 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
-import { Download, Package, Archive, Search, X } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Download, Package, Archive, Search, X, MessageSquare, Clock, CheckCircle, Truck, AlertCircle, XCircle, Plus } from 'lucide-react'
 import type { Order, OrderStatus } from '@/lib/types'
 import { formatDate, formatCurrency, getStatusLabel, getCarrierLabel, getTimeUntilArchive } from '@/lib/utils'
+import Button from '@/components/ui/Button'
 
 interface OrdersTableProps {
   orders: Order[]
+  onAddClick?: () => void
 }
 
 type TabFilter = 'all' | OrderStatus | 'archived'
@@ -17,27 +19,55 @@ type TabFilter = 'all' | OrderStatus | 'archived'
 const getDashboardStatusColor = (status: Order['status']): string => {
   switch (status) {
     case 'non_traite':
-      return 'bg-[#E9E9E9] text-black' // Gris
+      return 'bg-[#E9E9E9]/10 text-[#E9E9E9] border border-[#E9E9E9]/20' // Gris
     case 'validée':
-      return 'bg-[#00D98E] text-white' // Vert
+      return 'bg-[#00D98E]/10 text-[#00D98E] border border-[#00D98E]/20' // Vert
     case 'en_cours':
-      return 'bg-[#0066FF] text-white' // Bleu
+      return 'bg-[#0066FF]/10 text-[#0066FF] border border-[#0066FF]/20' // Bleu
     case 'litige':
-      return 'bg-[#FF9500] text-white' // Orange
+      return 'bg-[#FF9500]/10 text-[#FF9500] border border-[#FF9500]/20' // Orange
     case 'annulée':
-      return 'bg-[#FF0000] text-white' // Rouge
+      return 'bg-[#FF0000]/10 text-[#FF0000] border border-[#FF0000]/20' // Rouge
     default:
-      return 'bg-secondary/20 text-secondary'
+      return 'bg-secondary/10 text-secondary border border-secondary/20'
+  }
+}
+
+/**
+ * Fonction pour obtenir l'icône correspondant au statut
+ */
+const getStatusIcon = (status: Order['status']) => {
+  const iconProps = { className: "w-3 h-3" }
+  switch (status) {
+    case 'non_traite':
+      return <Clock {...iconProps} />
+    case 'validée':
+      return <CheckCircle {...iconProps} />
+    case 'en_cours':
+      return <Truck {...iconProps} />
+    case 'litige':
+      return <AlertCircle {...iconProps} />
+    case 'annulée':
+      return <XCircle {...iconProps} />
+    default:
+      return <Clock {...iconProps} />
   }
 }
 
 /**
  * Composant de tableau des commandes avec filtres par onglets
  */
-export default function OrdersTable({ orders }: OrdersTableProps) {
+export default function OrdersTable({ orders, onAddClick }: OrdersTableProps) {
   const [activeTab, setActiveTab] = useState<TabFilter>('all')
   const [searchTerm, setSearchTerm] = useState('')
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('')
+  const [purchasePrices, setPurchasePrices] = useState<Record<string, number>>(() => {
+    const initial: Record<string, number> = {}
+    orders.forEach(order => {
+      initial[order.id] = order.purchasePrice
+    })
+    return initial
+  })
 
   // Debounce du terme de recherche (300ms)
   useEffect(() => {
@@ -55,7 +85,7 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
     const searchLower = term.toLowerCase()
 
     // Recherche dans tous les champs pertinents
-    return (
+    return !!(
       order.articleName?.toLowerCase().includes(searchLower) ||
       order.brandName?.toLowerCase().includes(searchLower) ||
       order.transactionNumber?.toLowerCase().includes(searchLower) ||
@@ -148,36 +178,46 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
             Suivi des commandes
           </h2>
 
-          {/* Barre de recherche */}
-          <div className="flex flex-col items-end gap-1">
-            <div className="relative w-96">
-              <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary/40" />
-              <input
-                type="text"
-                placeholder="Rechercher : article, marque, ref commande, pseudo client…"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full h-10 pl-10 pr-10 bg-[#18181b] border border-[#27272a] rounded-[10px] text-[14px] text-white placeholder:text-secondary/40 focus:outline-none focus:border-primary/40 transition-colors"
-              />
-              {searchTerm && (
-                <button
-                  onClick={() => setSearchTerm('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary/40 hover:text-secondary transition-colors"
-                  title="Réinitialiser la recherche"
-                >
-                  <X size={16} />
-                </button>
+          {/* Barre de recherche et bouton */}
+          <div className="flex items-center gap-3">
+            <div className="flex flex-col items-end gap-1">
+              <div className="relative w-96">
+                <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary/40" />
+                <input
+                  type="text"
+                  placeholder="Rechercher : article, marque, ref commande, pseudo client…"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full h-10 pl-10 pr-10 bg-[#18181b] border border-[#27272a] rounded-[10px] text-[14px] text-white placeholder:text-secondary/40 focus:outline-none focus:border-primary/40 transition-colors"
+                />
+                {searchTerm && (
+                  <button
+                    onClick={() => setSearchTerm('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary/40 hover:text-secondary transition-colors"
+                    title="Réinitialiser la recherche"
+                  >
+                    <X size={16} />
+                  </button>
+                )}
+              </div>
+              {debouncedSearchTerm && debouncedSearchTerm.length >= 2 && (
+                <div className="flex items-center gap-2">
+                  <p className="text-[12px] text-secondary/60">
+                    {filteredOrders.length} résultat{filteredOrders.length > 1 ? 's' : ''} trouvé{filteredOrders.length > 1 ? 's' : ''}
+                  </p>
+                  <span className="text-[11px] text-orange-400 bg-orange-500/10 px-2 py-0.5 rounded-md">
+                    Recherche globale
+                  </span>
+                </div>
               )}
             </div>
-            {debouncedSearchTerm && debouncedSearchTerm.length >= 2 && (
-              <div className="flex items-center gap-2">
-                <p className="text-[12px] text-secondary/60">
-                  {filteredOrders.length} résultat{filteredOrders.length > 1 ? 's' : ''} trouvé{filteredOrders.length > 1 ? 's' : ''}
-                </p>
-                <span className="text-[11px] text-orange-400 bg-orange-500/10 px-2 py-0.5 rounded-md">
-                  Recherche globale
-                </span>
-              </div>
+
+            {/* Bouton Ajouter une vente */}
+            {onAddClick && (
+              <Button onClick={onAddClick} variant="primary">
+                <Plus className="w-5 h-5" />
+                <span>Ajouter une vente</span>
+              </Button>
             )}
           </div>
         </div>
@@ -249,10 +289,16 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
                 Prix vente
               </th>
               <th className="px-3 py-4 text-left text-[13px] font-medium text-secondary/60 tracking-tight">
+                Bénéfices
+              </th>
+              <th className="px-3 py-4 text-left text-[13px] font-medium text-secondary/60 tracking-tight">
                 Suivi colis
               </th>
               <th className="px-3 py-4 text-left text-[13px] font-medium text-secondary/60 tracking-tight">
                 Transporteur
+              </th>
+              <th className="px-3 py-4 text-left text-[13px] font-medium text-secondary/60 tracking-tight">
+                Bordereaux
               </th>
               <th className="px-3 py-4 text-left text-[13px] font-medium text-secondary/60 tracking-tight">
                 Actions
@@ -262,7 +308,7 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
           <tbody className="bg-[#0E0E0E] divide-y divide-[#1A1A1A]">
             {filteredOrders.length === 0 ? (
               <tr>
-                <td colSpan={activeTab === 'archived' ? 12 : activeTab === 'validée' ? 12 : 11} className="px-6 py-12 text-center">
+                <td colSpan={activeTab === 'archived' ? 14 : activeTab === 'validée' ? 14 : 13} className="px-6 py-12 text-center">
                   {debouncedSearchTerm && debouncedSearchTerm.length >= 2 ? (
                     <>
                       <Search className="w-12 h-12 mx-auto text-secondary/40 mb-4" />
@@ -315,12 +361,13 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
                     </td>
                     <td className="px-3 py-4 whitespace-nowrap">
                       <span
-                        className={`px-3 py-1.5 inline-flex text-[12px] leading-5 font-medium rounded-md tracking-tight ${
+                        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${
                           isArchived
-                            ? 'bg-gray-500/20 text-gray-400'
+                            ? 'bg-gray-500/10 text-gray-400 border border-gray-500/20'
                             : getDashboardStatusColor(order.status)
                         }`}
                       >
+                        {!isArchived && getStatusIcon(order.status)}
                         {isArchived ? 'Archivée' : getStatusLabel(order.status)}
                       </span>
                     </td>
@@ -334,10 +381,28 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
                       </td>
                     )}
                     <td className="px-3 py-4 whitespace-nowrap text-[13px] text-secondary/80">
-                      {formatCurrency(order.purchasePrice)}
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={purchasePrices[order.id] ?? order.purchasePrice}
+                        onChange={(e) => {
+                          const newPrice = parseFloat(e.target.value) || 0
+                          setPurchasePrices(prev => ({
+                            ...prev,
+                            [order.id]: newPrice
+                          }))
+                        }}
+                        className="w-20 px-2 py-1 bg-[#18181b] border border-[#27272a] rounded text-secondary text-[13px] focus:outline-none focus:border-primary/40"
+                        placeholder="0.00"
+                      />
                     </td>
                     <td className="px-3 py-4 whitespace-nowrap text-[13px] font-semibold text-secondary">
                       {formatCurrency(order.salePrice)}
+                    </td>
+                    <td className="px-3 py-4 whitespace-nowrap text-[13px]">
+                      <span className={`font-semibold ${order.salePrice - (purchasePrices[order.id] ?? order.purchasePrice) > 0 ? 'text-[#00D98E]' : 'text-red-500'}`}>
+                        {formatCurrency(order.salePrice - (purchasePrices[order.id] ?? order.purchasePrice))}
+                      </span>
                     </td>
                     <td className="px-3 py-4 whitespace-nowrap text-[13px] text-secondary/60 font-mono">
                       {order.trackingNumber || '-'}
@@ -356,6 +421,14 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
                           </button>
                         )}
                       </div>
+                    </td>
+                    <td className="px-3 py-4 whitespace-nowrap text-[13px]">
+                      <button
+                        className="p-2 text-secondary/60 hover:text-primary hover:bg-primary/10 rounded-lg transition-all duration-150"
+                        title="Accéder à la conversation"
+                      >
+                        <MessageSquare className="w-4 h-4" />
+                      </button>
                     </td>
                   </tr>
                 )
