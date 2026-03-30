@@ -1,0 +1,71 @@
+{
+  "manifest_version": 3,
+  "name": "Vintex CRM - Vinted Sync",
+  "version": "1.0.0",
+  "description": "Synchronise automatiquement vos ventes Vinted avec votre CRM Vintex",
+
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "tabs",
+    "storage",
+    "downloads"
+  ],
+
+  "host_permissions": [
+    "https://www.vinted.fr/*",
+    "https://svc-shipping-labels.s3.eu-central-1.amazonaws.com/*",
+    "http://localhost:3002/*"
+  ],
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["https://www.vinted.fr/my_orders*"],
+      "js": ["content-my-orders-full.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://www.vinted.fr/inbox/*"],
+      "js": ["content-inbox.js", "content-inbox-tracking.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["http://localhost:3002/*"],
+      "js": ["content-crm.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://www.vinted.fr/*"],
+      "js": ["content-fab.js"],
+      "run_at": "document_idle"
+    }
+  ],
+
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+
+  "web_accessible_resources": [
+    {
+      "resources": ["content-inbox-injected.js"],
+      "matches": ["https://www.vinted.fr/*"]
+    }
+  ]
+}

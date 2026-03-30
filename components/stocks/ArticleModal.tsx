@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { X, Upload } from 'lucide-react'
+import { X } from 'lucide-react'
 import type { Article, ArticleEtat, ArticleStatut } from '@/lib/types'
 import { calculerMarge, suggererPrixVente } from '@/lib/calculations'
 import { formatCurrency } from '@/lib/utils'
@@ -27,9 +27,11 @@ export interface ArticleFormData {
   emplacement?: string
 }
 
-/**
- * Composant modale pour ajouter ou modifier un article
- */
+const inputClass = "w-full px-4 py-2.5 bg-[#18181b] border border-[#27272a] rounded-[10px] text-[14px] text-foreground placeholder-foreground/25 focus:outline-none focus:border-primary focus:shadow-[0_0_0_3px_rgba(0,60,243,0.15)] transition-all duration-200"
+const inputErrorClass = "w-full px-4 py-2.5 bg-[#18181b] border border-error rounded-[10px] text-[14px] text-foreground placeholder-foreground/25 focus:outline-none focus:border-error focus:shadow-[0_0_0_3px_rgba(255,0,0,0.1)] transition-all duration-200"
+const labelClass = "block text-[11px] font-medium text-foreground/40 uppercase tracking-wider mb-1.5"
+const selectClass = "w-full px-4 py-2.5 bg-[#18181b] border border-[#27272a] rounded-[10px] text-[14px] text-foreground focus:outline-none focus:border-primary focus:shadow-[0_0_0_3px_rgba(0,60,243,0.15)] transition-all duration-200 appearance-none cursor-pointer"
+
 export default function ArticleModal({ isOpen, onClose, onSubmit, article }: ArticleModalProps) {
   const [formData, setFormData] = useState<ArticleFormData>({
     nom: '',
@@ -47,7 +49,6 @@ export default function ArticleModal({ isOpen, onClose, onSubmit, article }: Art
 
   const [errors, setErrors] = useState<Partial<Record<keyof ArticleFormData, string>>>({})
 
-  // Pré-remplir le formulaire si on modifie un article
   useEffect(() => {
     if (article) {
       setFormData({
@@ -70,30 +71,17 @@ export default function ArticleModal({ isOpen, onClose, onSubmit, article }: Art
 
   const validateForm = (): boolean => {
     const newErrors: Partial<Record<keyof ArticleFormData, string>> = {}
-
-    if (!formData.nom.trim()) {
-      newErrors.nom = 'Le nom est requis'
-    }
-    if (!formData.marque.trim()) {
-      newErrors.marque = 'La marque est requise'
-    }
-    if (!formData.taille.trim()) {
-      newErrors.taille = 'La taille est requise'
-    }
-    if (formData.prixAchat <= 0) {
-      newErrors.prixAchat = 'Le prix d\'achat doit être supérieur à 0'
-    }
-    if (formData.prixVente <= 0) {
-      newErrors.prixVente = 'Le prix de vente doit être supérieur à 0'
-    }
-
+    if (!formData.nom.trim()) newErrors.nom = 'Le nom est requis'
+    if (!formData.marque.trim()) newErrors.marque = 'La marque est requise'
+    if (!formData.taille.trim()) newErrors.taille = 'La taille est requise'
+    if (formData.prixAchat <= 0) newErrors.prixAchat = "Le prix d'achat doit être supérieur à 0"
+    if (formData.prixVente <= 0) newErrors.prixVente = 'Le prix de vente doit être supérieur à 0'
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-
     if (validateForm()) {
       onSubmit(formData)
       handleClose()
@@ -118,163 +106,133 @@ export default function ArticleModal({ isOpen, onClose, onSubmit, article }: Art
     onClose()
   }
 
-  // Suggérer automatiquement un prix de vente
   const handlePrixAchatChange = (value: number) => {
-    setFormData({ ...formData, prixAchat: value })
-    // Si le prix de vente n'a pas été modifié manuellement, on suggère
     if (formData.prixVente === 0) {
       const prixSuggere = suggererPrixVente(value, formData.etat)
       setFormData({ ...formData, prixAchat: value, prixVente: prixSuggere })
+    } else {
+      setFormData({ ...formData, prixAchat: value })
     }
   }
 
   const marge = calculerMarge(formData.prixAchat, formData.prixVente)
 
-  const categories = [
-    'Vêtements',
-    'Pantalons',
-    'Hauts',
-    'Robes',
-    'Jupes',
-    'Vestes',
-    'Chaussures',
-    'Accessoires',
-  ]
+  const categories = ['Vêtements', 'Pantalons', 'Hauts', 'Robes', 'Jupes', 'Vestes', 'Chaussures', 'Accessoires']
+  const couleurs = ['Noir', 'Blanc', 'Gris', 'Bleu', 'Rouge', 'Vert', 'Jaune', 'Rose', 'Violet', 'Marron', 'Beige', 'Multicolore']
 
-  const couleurs = [
-    'Noir',
-    'Blanc',
-    'Gris',
-    'Bleu',
-    'Rouge',
-    'Vert',
-    'Jaune',
-    'Rose',
-    'Violet',
-    'Marron',
-    'Beige',
-    'Multicolore',
+  const etats: { value: ArticleEtat; label: string }[] = [
+    { value: 'neuf', label: 'Neuf' },
+    { value: 'tres_bon', label: 'Très bon' },
+    { value: 'bon', label: 'Bon' },
+    { value: 'satisfaisant', label: 'Satisfaisant' },
   ]
 
   return (
     <>
       {/* Overlay */}
       <div
-        className="fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity"
+        className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40"
         onClick={handleClose}
       />
 
       {/* Modal */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
         <div
-          className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full my-8 transform transition-all"
+          className="bg-[#0E0E0E] border border-[#1A1A1A] rounded-xl shadow-[0_24px_64px_rgba(0,0,0,0.6)] max-w-4xl w-full my-8"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-              {article ? 'Modifier l\'article' : 'Ajouter un article'}
+          <div className="flex items-center justify-between px-6 py-4 border-b border-[#1A1A1A]">
+            <h2 className="font-heading text-[18px] font-semibold text-foreground tracking-tight">
+              {article ? "Modifier l'article" : 'Ajouter un article'}
             </h2>
             <button
               onClick={handleClose}
-              className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded-lg transition-colors"
+              className="w-8 h-8 flex items-center justify-center text-foreground/40 hover:text-foreground hover:bg-[#27272a] rounded-[8px] transition-all duration-200"
             >
-              <X className="w-6 h-6" />
+              <X className="w-5 h-5" />
             </button>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="px-6 py-4">
+          <form onSubmit={handleSubmit} className="px-6 py-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
               {/* Colonne gauche */}
               <div className="space-y-4">
-                <h3 className="font-semibold text-lg text-gray-900 dark:text-white mb-4">
+                <p className="text-[11px] font-medium text-foreground/30 uppercase tracking-widest mb-2">
                   Informations générales
-                </h3>
+                </p>
 
                 {/* Nom */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Nom de l'article <span className="text-red-500">*</span>
+                  <label className={labelClass}>
+                    Nom de l'article <span className="text-error normal-case">*</span>
                   </label>
                   <input
                     type="text"
                     value={formData.nom}
                     onChange={(e) => setFormData({ ...formData, nom: e.target.value })}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:text-white ${
-                      errors.nom ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-                    }`}
+                    className={errors.nom ? inputErrorClass : inputClass}
                     placeholder="Ex: Jean Levi's 501"
                   />
-                  {errors.nom && <p className="mt-1 text-sm text-red-500">{errors.nom}</p>}
+                  {errors.nom && <p className="mt-1 text-[12px] text-error">{errors.nom}</p>}
                 </div>
 
                 {/* Marque */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Marque <span className="text-red-500">*</span>
+                  <label className={labelClass}>
+                    Marque <span className="text-error normal-case">*</span>
                   </label>
                   <input
                     type="text"
                     value={formData.marque}
                     onChange={(e) => setFormData({ ...formData, marque: e.target.value })}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:text-white ${
-                      errors.marque ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-                    }`}
+                    className={errors.marque ? inputErrorClass : inputClass}
                     placeholder="Ex: Levi's"
                   />
-                  {errors.marque && <p className="mt-1 text-sm text-red-500">{errors.marque}</p>}
+                  {errors.marque && <p className="mt-1 text-[12px] text-error">{errors.marque}</p>}
                 </div>
 
                 {/* Catégorie */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Catégorie
-                  </label>
+                  <label className={labelClass}>Catégorie</label>
                   <select
                     value={formData.categorie}
                     onChange={(e) => setFormData({ ...formData, categorie: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    className={selectClass}
                   >
                     {categories.map((cat) => (
-                      <option key={cat} value={cat}>
-                        {cat}
-                      </option>
+                      <option key={cat} value={cat}>{cat}</option>
                     ))}
                   </select>
                 </div>
 
-                {/* Taille et Couleur */}
-                <div className="grid grid-cols-2 gap-4">
+                {/* Taille + Couleur */}
+                <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Taille <span className="text-red-500">*</span>
+                    <label className={labelClass}>
+                      Taille <span className="text-error normal-case">*</span>
                     </label>
                     <input
                       type="text"
                       value={formData.taille}
                       onChange={(e) => setFormData({ ...formData, taille: e.target.value })}
-                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:text-white ${
-                        errors.taille ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-                      }`}
+                      className={errors.taille ? inputErrorClass : inputClass}
                       placeholder="Ex: M, 38"
                     />
-                    {errors.taille && <p className="mt-1 text-sm text-red-500">{errors.taille}</p>}
+                    {errors.taille && <p className="mt-1 text-[12px] text-error">{errors.taille}</p>}
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Couleur
-                    </label>
+                    <label className={labelClass}>Couleur</label>
                     <select
                       value={formData.couleur}
                       onChange={(e) => setFormData({ ...formData, couleur: e.target.value })}
-                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:text-white"
+                      className={selectClass}
                     >
                       <option value="">Sélectionner</option>
-                      {couleurs.map((couleur) => (
-                        <option key={couleur} value={couleur}>
-                          {couleur}
-                        </option>
+                      {couleurs.map((c) => (
+                        <option key={c} value={c}>{c}</option>
                       ))}
                     </select>
                   </div>
@@ -282,24 +240,17 @@ export default function ArticleModal({ isOpen, onClose, onSubmit, article }: Art
 
                 {/* État */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    État
-                  </label>
+                  <label className={labelClass}>État</label>
                   <div className="grid grid-cols-2 gap-2">
-                    {[
-                      { value: 'neuf', label: 'Neuf' },
-                      { value: 'tres_bon', label: 'Très bon' },
-                      { value: 'bon', label: 'Bon' },
-                      { value: 'satisfaisant', label: 'Satisfaisant' },
-                    ].map((etat) => (
+                    {etats.map((etat) => (
                       <button
                         key={etat.value}
                         type="button"
-                        onClick={() => setFormData({ ...formData, etat: etat.value as ArticleEtat })}
-                        className={`px-3 py-2 text-sm rounded-lg border-2 transition-all ${
+                        onClick={() => setFormData({ ...formData, etat: etat.value })}
+                        className={`px-3 py-2 text-[13px] rounded-[10px] border-2 font-medium transition-all duration-200 ${
                           formData.etat === etat.value
-                            ? 'border-purple-600 bg-purple-50 text-purple-600 font-medium'
-                            : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400'
+                            ? 'border-primary bg-primary/15 text-primary shadow-[0_0_0_0px_rgba(0,60,243,0.2)]'
+                            : 'border-[#27272a] text-foreground/50 hover:border-primary/40 hover:text-foreground'
                         }`}
                       >
                         {etat.label}
@@ -311,78 +262,66 @@ export default function ArticleModal({ isOpen, onClose, onSubmit, article }: Art
 
               {/* Colonne droite */}
               <div className="space-y-4">
-                <h3 className="font-semibold text-lg text-gray-900 dark:text-white mb-4">
+                <p className="text-[11px] font-medium text-foreground/30 uppercase tracking-widest mb-2">
                   Prix et stock
-                </h3>
+                </p>
 
                 {/* Prix d'achat */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Prix d'achat <span className="text-red-500">*</span>
+                  <label className={labelClass}>
+                    Prix d'achat <span className="text-error normal-case">*</span>
                   </label>
                   <div className="relative">
                     <input
                       type="number"
                       step="0.01"
                       min="0"
-                      value={formData.prixAchat}
+                      value={formData.prixAchat || ''}
                       onChange={(e) => handlePrixAchatChange(parseFloat(e.target.value) || 0)}
-                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:text-white ${
-                        errors.prixAchat ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-                      }`}
+                      className={`${errors.prixAchat ? inputErrorClass : inputClass} pr-8`}
                     />
-                    <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
-                      €
-                    </span>
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[13px] text-foreground/40">€</span>
                   </div>
-                  {errors.prixAchat && <p className="mt-1 text-sm text-red-500">{errors.prixAchat}</p>}
+                  {errors.prixAchat && <p className="mt-1 text-[12px] text-error">{errors.prixAchat}</p>}
                 </div>
 
                 {/* Prix de vente */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Prix de vente <span className="text-red-500">*</span>
+                  <label className={labelClass}>
+                    Prix de vente <span className="text-error normal-case">*</span>
                   </label>
                   <div className="relative">
                     <input
                       type="number"
                       step="0.01"
                       min="0"
-                      value={formData.prixVente}
-                      onChange={(e) =>
-                        setFormData({ ...formData, prixVente: parseFloat(e.target.value) || 0 })
-                      }
-                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:text-white ${
-                        errors.prixVente ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-                      }`}
+                      value={formData.prixVente || ''}
+                      onChange={(e) => setFormData({ ...formData, prixVente: parseFloat(e.target.value) || 0 })}
+                      className={`${errors.prixVente ? inputErrorClass : inputClass} pr-8`}
                     />
-                    <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
-                      €
-                    </span>
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[13px] text-foreground/40">€</span>
                   </div>
-                  {errors.prixVente && <p className="mt-1 text-sm text-red-500">{errors.prixVente}</p>}
+                  {errors.prixVente && <p className="mt-1 text-[12px] text-error">{errors.prixVente}</p>}
                 </div>
 
                 {/* Calcul de marge */}
                 {formData.prixAchat > 0 && formData.prixVente > 0 && (
-                  <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg space-y-2">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600 dark:text-gray-400">Marge brute :</span>
-                      <span className="font-medium">{formatCurrency(marge.margeBrute)}</span>
+                  <div className="p-4 bg-primary/5 border border-primary/15 rounded-[10px] space-y-2">
+                    <div className="flex items-center justify-between text-[13px]">
+                      <span className="text-foreground/50">Marge brute :</span>
+                      <span className="font-medium text-foreground">{formatCurrency(marge.margeBrute)}</span>
                     </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600 dark:text-gray-400">Frais Vinted (5%) :</span>
-                      <span className="font-medium text-red-600">
-                        -{formatCurrency(marge.fraisVinted)}
-                      </span>
+                    <div className="flex items-center justify-between text-[13px]">
+                      <span className="text-foreground/50">Frais Vinted (5%) :</span>
+                      <span className="font-medium text-error">-{formatCurrency(marge.fraisVinted)}</span>
                     </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600 dark:text-gray-400">Frais protection :</span>
-                      <span className="font-medium text-red-600">-{formatCurrency(0.70)}</span>
+                    <div className="flex items-center justify-between text-[13px]">
+                      <span className="text-foreground/50">Frais protection :</span>
+                      <span className="font-medium text-error">-{formatCurrency(0.70)}</span>
                     </div>
-                    <div className="flex items-center justify-between text-base font-bold pt-2 border-t border-blue-200 dark:border-blue-700">
-                      <span>Bénéfice net :</span>
-                      <span className="text-green-600 dark:text-green-400">
+                    <div className="flex items-center justify-between text-[14px] font-bold pt-2 border-t border-primary/20">
+                      <span className="text-foreground">Bénéfice net :</span>
+                      <span className="text-success">
                         {formatCurrency(marge.margeNette)} ({marge.pourcentage})
                       </span>
                     </div>
@@ -391,13 +330,11 @@ export default function ArticleModal({ isOpen, onClose, onSubmit, article }: Art
 
                 {/* Statut */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Statut
-                  </label>
+                  <label className={labelClass}>Statut</label>
                   <select
                     value={formData.statut}
                     onChange={(e) => setFormData({ ...formData, statut: e.target.value as ArticleStatut })}
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    className={selectClass}
                   >
                     <option value="disponible">Disponible</option>
                     <option value="en_vente">En vente</option>
@@ -408,28 +345,24 @@ export default function ArticleModal({ isOpen, onClose, onSubmit, article }: Art
 
                 {/* Emplacement */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Emplacement
-                  </label>
+                  <label className={labelClass}>Emplacement</label>
                   <input
                     type="text"
                     value={formData.emplacement}
                     onChange={(e) => setFormData({ ...formData, emplacement: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    className={inputClass}
                     placeholder="Ex: Étagère A"
                   />
                 </div>
 
                 {/* Description */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Description
-                  </label>
+                  <label className={labelClass}>Description</label>
                   <textarea
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     rows={3}
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    className={`${inputClass} resize-none`}
                     placeholder="Description optionnelle..."
                   />
                 </div>
@@ -437,17 +370,17 @@ export default function ArticleModal({ isOpen, onClose, onSubmit, article }: Art
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-end gap-3 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-end gap-3 mt-6 pt-5 border-t border-[#1A1A1A]">
               <button
                 type="button"
                 onClick={handleClose}
-                className="px-6 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                className="px-5 py-2.5 bg-[#18181b] border border-[#27272a] text-foreground/60 hover:text-foreground rounded-[10px] text-[14px] font-medium transition-all duration-200"
               >
                 Annuler
               </button>
               <button
                 type="submit"
-                className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                className="px-5 py-2.5 bg-primary text-white rounded-[10px] text-[14px] font-semibold shadow-[0_4px_16px_rgba(0,60,243,0.4)] hover:translate-y-[-1px] hover:shadow-[0_4px_20px_rgba(0,60,243,0.5)] transition-all duration-250"
               >
                 {article ? 'Mettre à jour' : 'Enregistrer'}
               </button>

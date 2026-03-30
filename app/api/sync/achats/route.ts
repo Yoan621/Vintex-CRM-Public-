@@ -4,6 +4,10 @@ import { withAuthAndRateLimit } from '@/lib/auth/extension-auth'
 import { validateAchats, formatZodError } from '@/lib/validation/sync-validators'
 import { z } from 'zod'
 
+export async function OPTIONS(request: NextRequest) {
+  return withAuthAndRateLimit(request, async () => new Response(null, { status: 204 }))
+}
+
 /**
  * POST /api/sync/achats
  * Synchronise les achats depuis l'extension Chrome
@@ -86,8 +90,8 @@ export async function POST(request: NextRequest) {
 
       const durationSeconds = Math.round((Date.now() - startTime) / 1000)
 
-      // Logger la synchronisation
-      await prisma.syncLog.create({
+      // Logger la synchronisation (non-bloquant)
+      prisma.syncLog.create({
         data: {
           syncType: 'achats',
           status: errors.length === 0 ? 'success' : (achats.length === errors.length ? 'error' : 'partial'),
@@ -100,15 +104,15 @@ export async function POST(request: NextRequest) {
           errorDetails: errors.length > 0 ? JSON.stringify(errors) : null,
           endTime: new Date()
         }
-      })
+      }).catch(e => console.warn('SyncLog write failed:', e.message))
 
-      // Mettre à jour la date de dernière synchronisation
+      // Mettre à jour la date de dernière synchronisation (non-bloquant)
       const apiKey = request.headers.get('X-API-Key')
       if (apiKey) {
-        await prisma.extensionConfig.updateMany({
+        prisma.extensionConfig.updateMany({
           where: { apiKey },
           data: { lastSyncAchats: new Date() }
-        })
+        }).catch(e => console.warn('ExtensionConfig update failed:', e.message))
       }
 
       return NextResponse.json({
@@ -122,7 +126,8 @@ export async function POST(request: NextRequest) {
     } catch (error) {
       console.error('Erreur API sync achats:', error)
 
-      await prisma.syncLog.create({
+      // Logger l'erreur (non-bloquant)
+      prisma.syncLog.create({
         data: {
           syncType: 'achats',
           status: 'error',
@@ -132,7 +137,7 @@ export async function POST(request: NextRequest) {
           durationSeconds: Math.round((Date.now() - startTime) / 1000),
           endTime: new Date()
         }
-      })
+      }).catch(e => console.warn('SyncLog error write failed:', e.message))
 
       return NextResponse.json(
         {

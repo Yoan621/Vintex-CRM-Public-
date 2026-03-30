@@ -1,0 +1,26 @@
+{
+  "name": "vintex-crm-backend-example",
+  "version": "1.0.0",
+  "description": "Exemple de backend pour recevoir les données de l'extension Chrome Vintex CRM",
+  "main": "backend-example.js",
+  "scripts": {
+    "start": "node backend-example.js",
+    "dev": "nodemon backend-example.js"
+  },
+  "keywords": [
+    "vinted",
+    "crm",
+    "backend",
+    "api"
+  ],
+  "author": "Vintex CRM",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

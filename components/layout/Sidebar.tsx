@@ -3,8 +3,9 @@
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { LayoutDashboard, ShoppingBag, ShoppingCart, Zap, Package } from 'lucide-react'
+import { LayoutDashboard, ShoppingBag, ShoppingCart, Zap, Package, Settings, ShieldCheck } from 'lucide-react'
 import { useSidebar } from '@/contexts/SidebarContext'
+import { useEffect, useState } from 'react'
 
 interface NavItem {
   href: string
@@ -27,6 +28,14 @@ const navItems: NavItem[] = [
 export default function Sidebar() {
   const pathname = usePathname()
   const { isSidebarOpen, isCollapsed } = useSidebar()
+  const [isAdmin, setIsAdmin] = useState(false)
+
+  useEffect(() => {
+    fetch('/api/admin/me')
+      .then(r => r.json())
+      .then(d => setIsAdmin(d.isAdmin === true))
+      .catch(() => {})
+  }, [])
 
   const isActive = (href: string) => pathname === href
 
@@ -96,14 +105,74 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* Footer */}
-      {!isCollapsed && (
-        <div className="absolute bottom-0 left-0 right-0 p-5">
-          <p className="text-xs text-grayDark text-center">
-            © 2025 Vintex CRM
-          </p>
+      {/* Admin (bas de sidebar, visible uniquement si session admin active) */}
+      {isAdmin && (
+        <div className={`absolute bottom-[88px] left-0 right-0 ${isCollapsed ? 'px-2' : 'px-3'}`}>
+          {(() => {
+            const active = isActive('/admin')
+            return (
+              <Link
+                href="/admin"
+                title={isCollapsed ? 'Admin' : ''}
+                className={`
+                  group flex items-center rounded-[10px]
+                  transition-all duration-250 ease-out
+                  ${isCollapsed ? 'justify-center px-3 py-3.5' : 'gap-4 px-5 py-3.5'}
+                  ${active
+                    ? 'bg-primary shadow-[0_4px_16px_rgba(0,60,243,0.4)]'
+                    : 'hover:bg-primary/10 hover:translate-x-1'
+                  }
+                `}
+              >
+                <ShieldCheck
+                  className={`w-5 h-5 transition-all duration-250 flex-shrink-0 ${active ? 'text-white' : 'text-secondary/60 group-hover:scale-105 group-hover:text-white'}`}
+                  strokeWidth={2}
+                />
+                {!isCollapsed && (
+                  <span className={`text-[15px] font-medium tracking-tight transition-all duration-250 ${active ? 'text-white' : 'text-secondary/60 group-hover:text-white group-hover:translate-x-0.5'}`}>
+                    Admin
+                  </span>
+                )}
+              </Link>
+            )
+          })()}
         </div>
       )}
+
+      {/* Paramètres (bas de sidebar) */}
+      <div className={`absolute bottom-0 left-0 right-0 border-t border-[#1A1A1A] ${isCollapsed ? 'px-2 py-3' : 'px-3 py-3'}`}>
+        {(() => {
+          const active = isActive('/parametres')
+          return (
+            <Link
+              href="/parametres"
+              title={isCollapsed ? 'Paramètres' : ''}
+              className={`
+                group flex items-center rounded-[10px]
+                transition-all duration-250 ease-out
+                ${isCollapsed ? 'justify-center px-3 py-3.5' : 'gap-4 px-5 py-3.5'}
+                ${active
+                  ? 'bg-primary shadow-[0_4px_16px_rgba(0,60,243,0.4)]'
+                  : 'hover:bg-primary/10 hover:translate-x-1'
+                }
+              `}
+            >
+              <Settings
+                className={`w-5 h-5 transition-all duration-250 flex-shrink-0 ${active ? 'text-white' : 'text-secondary/60 group-hover:scale-105 group-hover:text-white'}`}
+                strokeWidth={2}
+              />
+              {!isCollapsed && (
+                <span className={`text-[15px] font-medium tracking-tight transition-all duration-250 ${active ? 'text-white' : 'text-secondary/60 group-hover:text-white group-hover:translate-x-0.5'}`}>
+                  Paramètres
+                </span>
+              )}
+            </Link>
+          )
+        })()}
+        {!isCollapsed && (
+          <p className="text-xs text-center text-secondary/20 mt-3">© 2025 Vintex CRM</p>
+        )}
+      </div>
     </aside>
   )
 }

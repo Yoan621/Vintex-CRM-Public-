@@ -213,7 +213,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Section Graphique */}
-        <div className={`mb-6 transvition-opacity duration-300 ${isLoading ? 'opacity-50' : 'opacity-100'}`}>
+        <div className={`mb-6 transition-opacity duration-300 ${isLoading ? 'opacity-50' : 'opacity-100'}`}>
           <SalesChart data={generateChartData(filteredOrdersByAccount, timePeriod)} />
         </div>
 

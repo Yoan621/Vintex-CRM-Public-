@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vintex CRM</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 360px;
+      min-height: 200px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0E0E0E;
+      color: #E9E9E9;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 16px 12px;
+      border-bottom: 1px solid #1A1A1A;
+    }
+    .header-logo {
+      width: 32px;
+      height: 32px;
+      background: #003CF3;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.3px;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(0,60,243,0.4);
+    }
+    .header-text h1 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #E9E9E9;
+      letter-spacing: -0.2px;
+    }
+    .header-text p {
+      font-size: 11px;
+      color: rgba(233,233,233,0.4);
+      margin-top: 1px;
+    }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex;
+      padding: 8px 12px 0;
+      gap: 2px;
+      border-bottom: 1px solid #1A1A1A;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 8px 0;
+      border: none;
+      border-radius: 0;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      background: transparent;
+      color: rgba(233,233,233,0.4);
+      transition: all 0.2s;
+      width: auto;
+      margin-bottom: 0;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+    }
+    .tab-btn.active {
+      color: #003CF3;
+      border-bottom-color: #003CF3;
+    }
+    .tab-btn:hover:not(.active) {
+      color: rgba(233,233,233,0.8);
+      background: transparent;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* ── Container ── */
+    .container {
+      padding: 14px 12px 16px;
+    }
+
+    /* ── Tab panels ── */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Status ── */
+    .status {
+      background: #18181b;
+      border: 1px solid #27272a;
+      border-radius: 10px;
+      padding: 9px 12px;
+      margin-bottom: 12px;
+      font-size: 12px;
+      text-align: center;
+      min-height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(233,233,233,0.7);
+    }
+    .status.hidden  { display: none; }
+    .status.success { background: rgba(0,217,142,0.08); border-color: rgba(0,217,142,0.25); color: #00D98E; }
+    .status.error   { background: rgba(255,0,0,0.08);   border-color: rgba(255,0,0,0.2);    color: #ff6666; }
+    .status.warning { background: rgba(255,149,0,0.08); border-color: rgba(255,149,0,0.2);  color: #FF9500; }
+
+    /* ── Progress ── */
+    .progress { margin-bottom: 12px; }
+    .progress-bar {
+      background: #27272a;
+      border-radius: 10px;
+      height: 6px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+    .progress-fill {
+      background: linear-gradient(90deg, #003CF3, #0066FF);
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    .progress-text {
+      font-size: 11px;
+      margin-top: 5px;
+      color: rgba(233,233,233,0.45);
+    }
+
+    /* ── Buttons ── */
+    button {
+      width: 100%;
+      padding: 10px 12px;
+      background: #003CF3;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s;
+      margin-bottom: 7px;
+      box-shadow: 0 4px 14px rgba(0,60,243,0.35);
+      font-family: inherit;
+    }
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px rgba(0,60,243,0.5);
+      background: rgba(0,60,243,0.9);
+    }
+    button:active  { transform: translateY(0); }
+    button:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    button.secondary {
+      background: #18181b;
+      border: 1px solid #27272a;
+      color: rgba(233,233,233,0.65);
+      box-shadow: none;
+    }
+    button.secondary:hover {
+      border-color: rgba(0,60,243,0.4);
+      color: #E9E9E9;
+      background: #18181b;
+      box-shadow: none;
+    }
+    button.secondary:disabled {
+      opacity: 0.3;
+    }
+
+    /* ── Scan buttons row ── */
+    .scan-row {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 7px;
+    }
+    .scan-row button {
+      flex: 1;
+      font-size: 12px;
+      padding: 9px 4px;
+      margin-bottom: 0;
+    }
+
+    /* ── Results ── */
+    .results {
+      margin-top: 10px;
+      font-size: 12px;
+      padding: 10px 12px;
+      background: #18181b;
+      border: 1px solid #1A1A1A;
+      border-radius: 10px;
+      color: rgba(233,233,233,0.7);
+    }
+    .results.hidden { display: none; }
+    .results h3 {
+      font-size: 12px;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #E9E9E9;
+    }
+    .results p { margin: 4px 0; }
+
+    /* ── Spinner ── */
+    .spinner {
+      border: 2px solid rgba(233,233,233,0.2);
+      border-top: 2px solid #003CF3;
+      border-radius: 50%;
+      width: 13px; height: 13px;
+      animation: spin 0.8s linear infinite;
+      display: inline-block;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+    @keyframes spin { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
+
+    /* ── Settings form ── */
+    .settings-group { margin-bottom: 12px; }
+    .settings-label {
+      display: block;
+      font-size: 10px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: rgba(233,233,233,0.35);
+      margin-bottom: 5px;
+    }
+    .settings-input {
+      width: 100%;
+      padding: 9px 11px;
+      background: #18181b;
+      border: 1px solid #27272a;
+      border-radius: 10px;
+      font-size: 12px;
+      color: #E9E9E9;
+      outline: none;
+      font-family: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .settings-input::placeholder { color: rgba(233,233,233,0.2); }
+    .settings-input:focus {
+      border-color: #003CF3;
+      box-shadow: 0 0 0 3px rgba(0,60,243,0.12);
+    }
+    .settings-input.monospace {
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      letter-spacing: 0.02em;
+    }
+
+    .token-row { display: flex; gap: 6px; align-items: center; }
+    .token-row .settings-input { flex: 1; }
+    .token-toggle {
+      padding: 9px 10px;
+      width: auto;
+      font-size: 11px;
+      background: #18181b;
+      border: 1px solid #27272a;
+      color: rgba(233,233,233,0.5);
+      border-radius: 10px;
+      margin-bottom: 0;
+      flex-shrink: 0;
+      box-shadow: none;
+    }
+    .token-toggle:hover {
+      background: #003CF3;
+      border-color: #003CF3;
+      color: #fff;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .save-btn {
+      background: #003CF3;
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(0,60,243,0.35);
+      margin-top: 4px;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #1A1A1A;
+      margin: 12px 0;
+    }
+
+    .settings-status {
+      font-size: 11px;
+      text-align: center;
+      padding: 7px 10px;
+      border-radius: 8px;
+      margin-top: 8px;
+      display: none;
+    }
+    .settings-status.ok {
+      display: block;
+      background: rgba(0,217,142,0.08);
+      border: 1px solid rgba(0,217,142,0.2);
+      color: #00D98E;
+    }
+    .settings-status.error {
+      display: block;
+      background: rgba(255,0,0,0.08);
+      border: 1px solid rgba(255,0,0,0.2);
+      color: #ff6666;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-logo">VC</div>
+    <div class="header-text">
+      <h1>Vintex CRM</h1>
+      <p>Synchronisation Vinted</p>
+    </div>
+  </div>
+
+  <!-- Onglets -->
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="scan">🔍 Scanner</button>
+    <button class="tab-btn" data-tab="settings">⚙️ Paramètres</button>
+  </div>
+
+  <div class="container">
+
+    <!-- ── Onglet Scanner ── -->
+    <div id="tab-scan" class="tab-panel active">
+
+      <div id="status" class="status hidden"></div>
+
+      <div id="progress" class="progress" style="display:none;">
+        <div class="progress-bar">
+          <div id="progress-fill" class="progress-fill"></div>
+        </div>
+        <div id="progress-text" class="progress-text"></div>
+      </div>
+
+      <div class="scan-row">
+        <button id="scanButton10">🔟 10</button>
+        <button id="scanButton50">50</button>
+        <button id="scanButton100">100</button>
+      </div>
+
+      <button id="downloadCsvButton" class="secondary" disabled style="display:none;">📥 Télécharger CSV</button>
+      <button id="syncCrmButton" class="secondary" disabled style="display:none;">🔄 Sync CRM</button>
+      <button id="syncAchatsButton" class="secondary" disabled style="display:none;">🔵 Sync Achats CRM</button>
+      <button id="clearHistoryButton" class="secondary" style="display:none; opacity:0.5; font-size:11px;">🗑️ Effacer l'historique</button>
+
+      <div id="results" class="results hidden"></div>
+    </div>
+
+    <!-- ── Onglet Paramètres ── -->
+    <div id="tab-settings" class="tab-panel">
+
+      <div class="settings-group">
+        <label class="settings-label">URL du CRM</label>
+        <input id="settingsApiUrl" class="settings-input" type="text" placeholder="http://localhost:3002" />
+      </div>
+
+      <div class="settings-group">
+        <label class="settings-label">Clé API</label>
+        <div class="token-row">
+          <input id="settingsApiToken" class="settings-input monospace" type="password" placeholder="vtx_••••••••••••••••" />
+          <button class="token-toggle" id="toggleApiToken">Voir</button>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <label class="settings-label">Compte Vinted</label>
+        <input id="settingsVintedAccount" class="settings-input" type="text" placeholder="@truthshop" />
+      </div>
+
+      <hr class="divider" />
+
+      <button id="saveSettingsBtn" class="save-btn">💾 Enregistrer</button>
+      <button id="testConnectionBtn" class="secondary" style="margin-top:0;">🔌 Tester la connexion</button>
+
+      <div id="settingsStatus" class="settings-status"></div>
+
+    </div>
+
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

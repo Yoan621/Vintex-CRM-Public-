@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configuration - Vintex CRM</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+      background: #1a1f23;
+      color: #E9E9E9;
+      min-height: 100vh;
+      padding: 40px 20px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 580px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 32px;
+    }
+
+    .header-logo {
+      width: 42px;
+      height: 42px;
+      background: #003CF3;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      color: white;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 16px rgba(0, 60, 243, 0.4);
+      flex-shrink: 0;
+    }
+
+    .header-text h1 {
+      font-size: 20px;
+      font-weight: 600;
+      color: #E9E9E9;
+      letter-spacing: -0.3px;
+    }
+
+    .header-text p {
+      font-size: 13px;
+      color: rgba(233, 233, 233, 0.45);
+      margin-top: 2px;
+    }
+
+    /* Cards */
+    .card {
+      background: #0E0E0E;
+      border: 1px solid #1A1A1A;
+      border-radius: 14px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px;
+      border-bottom: 1px solid #1A1A1A;
+    }
+
+    .card-icon {
+      width: 32px;
+      height: 32px;
+      background: #003CF3;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 14px rgba(0, 60, 243, 0.4);
+      flex-shrink: 0;
+    }
+
+    .card-icon svg {
+      width: 15px;
+      height: 15px;
+      stroke: white;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #E9E9E9;
+      letter-spacing: -0.2px;
+    }
+
+    .card-body {
+      padding: 20px;
+    }
+
+    /* Alert boxes */
+    .alert {
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .alert-warning {
+      background: rgba(255, 149, 0, 0.08);
+      border: 1px solid rgba(255, 149, 0, 0.25);
+      color: rgba(255, 149, 0, 0.9);
+    }
+
+    .alert-info {
+      background: rgba(0, 60, 243, 0.08);
+      border: 1px solid rgba(0, 60, 243, 0.25);
+      color: rgba(0, 102, 255, 0.9);
+    }
+
+    .alert strong {
+      display: block;
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+
+    /* Form */
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 500;
+      color: rgba(233, 233, 233, 0.45);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+    }
+
+    .label-hint {
+      font-size: 12px;
+      color: rgba(233, 233, 233, 0.3);
+      text-transform: none;
+      letter-spacing: 0;
+      font-weight: 400;
+      margin-top: 2px;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 10px 14px;
+      background: #18181b;
+      border: 1px solid #27272a;
+      border-radius: 10px;
+      font-size: 13px;
+      color: #E9E9E9;
+      transition: all 0.2s;
+      font-family: inherit;
+      outline: none;
+    }
+
+    input[type="text"]:focus,
+    input[type="password"]:focus {
+      border-color: #003CF3;
+      box-shadow: 0 0 0 3px rgba(0, 60, 243, 0.15);
+    }
+
+    input::placeholder {
+      color: rgba(233, 233, 233, 0.25);
+    }
+
+    /* Token field */
+    .token-field {
+      position: relative;
+    }
+
+    .token-field input {
+      padding-right: 80px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+    }
+
+    .token-toggle {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #27272a;
+      border: none;
+      color: rgba(233, 233, 233, 0.6);
+      cursor: pointer;
+      padding: 4px 10px;
+      font-size: 11px;
+      border-radius: 6px;
+      transition: all 0.2s;
+      font-family: inherit;
+      font-weight: 500;
+    }
+
+    .token-toggle:hover {
+      background: #003CF3;
+      color: white;
+    }
+
+    /* Buttons */
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s;
+      font-family: inherit;
+      letter-spacing: -0.1px;
+    }
+
+    .btn-primary {
+      background: #003CF3;
+      color: white;
+      box-shadow: 0 4px 16px rgba(0, 60, 243, 0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px rgba(0, 60, 243, 0.5);
+      background: rgba(0, 60, 243, 0.9);
+    }
+
+    .btn-secondary {
+      background: #18181b;
+      border: 1px solid #27272a;
+      color: rgba(233, 233, 233, 0.7);
+    }
+
+    .btn-secondary:hover {
+      border-color: rgba(0, 60, 243, 0.5);
+      color: #E9E9E9;
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* Status */
+    .status-message {
+      margin-top: 14px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      text-align: center;
+      display: none;
+    }
+
+    .status-message.success {
+      background: rgba(0, 217, 142, 0.1);
+      color: #00D98E;
+      border: 1px solid rgba(0, 217, 142, 0.25);
+      display: block;
+    }
+
+    .status-message.error {
+      background: rgba(255, 0, 0, 0.08);
+      color: #ff6666;
+      border: 1px solid rgba(255, 0, 0, 0.2);
+      display: block;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      font-size: 11px;
+      color: rgba(233, 233, 233, 0.2);
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px solid #1A1A1A;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- Header -->
+    <div class="header">
+      <div class="header-logo">VC</div>
+      <div class="header-text">
+        <h1>Vintex CRM</h1>
+        <p>Configuration de l'extension Chrome</p>
+      </div>
+    </div>
+
+    <!-- Card Config -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <span class="card-title">Connexion au CRM</span>
+      </div>
+
+      <div class="card-body">
+        <div class="alert alert-warning">
+          <strong>⚠️ Sécurité</strong>
+          Ne partagez jamais votre token d'API. Il donne accès à toutes vos données CRM.
+        </div>
+
+        <div class="alert alert-info">
+          <strong>ℹ️ Comment configurer</strong>
+          Renseignez l'URL de votre CRM et le token API disponible dans Paramètres → Clé API.
+        </div>
+
+        <form id="configForm">
+          <div class="form-group">
+            <label for="apiUrl">
+              URL du CRM
+              <div class="label-hint">Endpoint qui reçoit les données Vinted</div>
+            </label>
+            <input
+              type="text"
+              id="apiUrl"
+              name="apiUrl"
+              placeholder="http://localhost:3002/api/vinted/orders"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="apiToken">
+              Token d'API
+              <div class="label-hint">Disponible dans Paramètres → Clé API de votre CRM</div>
+            </label>
+            <div class="token-field">
+              <input
+                type="password"
+                id="apiToken"
+                name="apiToken"
+                placeholder="vtx_••••••••••••••••••••"
+              />
+              <button type="button" id="toggleToken" class="token-toggle">Afficher</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="vintedAccount">
+              Compte Vinted
+              <div class="label-hint">Votre pseudo Vinted (ex : @truthshop)</div>
+            </label>
+            <input
+              type="text"
+              id="vintedAccount"
+              name="vintedAccount"
+              placeholder="@truthshop"
+            />
+          </div>
+
+          <div class="button-group">
+            <button type="submit" class="btn btn-primary">Enregistrer</button>
+            <button type="button" id="testButton" class="btn btn-secondary">Tester la connexion</button>
+          </div>
+
+          <div id="statusMessage" class="status-message"></div>
+        </form>
+      </div>
+    </div>
+
+    <div class="footer">
+      Vintex CRM · Extension Chrome · v1.0
+    </div>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>

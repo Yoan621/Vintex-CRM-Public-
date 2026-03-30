@@ -23,7 +23,7 @@ function LayoutContent({ children }: LayoutClientProps) {
     <div className="min-h-screen">
       <Sidebar />
       <main
-        className={`bg-[#1a1f23] min-h-screen transition-all duration-300 ${getMarginLeft()}`}
+        className={`bg-background min-h-screen transition-all duration-300 ${getMarginLeft()}`}
       >
         {children}
       </main>

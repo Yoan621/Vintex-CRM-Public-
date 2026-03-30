@@ -15,7 +15,7 @@ export const VenteSchema = z.object({
 
   // Prix
   purchasePrice: z.number().nonnegative('Prix d\'achat ne peut pas être négatif').default(0),
-  salePrice: z.number().positive('Prix de vente doit être positif'),
+  salePrice: z.number().nonnegative('Prix de vente ne peut pas être négatif'),
   profit: z.number(),
 
   // Dates
@@ -75,9 +75,9 @@ export const AchatSchema = z.object({
   photo: z.string().url('URL de la photo invalide').optional().nullable(),
 
   // Prix
-  prixAchat: z.number().positive('Prix d\'achat doit être positif'),
+  prixAchat: z.number().nonnegative('Prix d\'achat ne peut pas être négatif'),
   fraisPort: z.number().nonnegative('Frais de port ne peut pas être négatif').default(0),
-  coutTotal: z.number().positive('Coût total doit être positif'),
+  coutTotal: z.number().nonnegative('Coût total ne peut pas être négatif'),
   prixReventePrevu: z.number().positive('Prix de revente prévu doit être positif').optional().nullable(),
   margeEstimee: z.number().default(0),
 

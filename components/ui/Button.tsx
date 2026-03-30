@@ -19,8 +19,8 @@ export default function Button({
   const baseClasses = 'font-medium rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2'
 
   const variantClasses = {
-    primary: 'bg-primary text-white hover:bg-[#0052CC] hover:shadow-[0_4px_12px_rgba(0,102,255,0.3)] active:scale-[0.98] shadow-soft',
-    secondary: 'bg-cyan text-white hover:bg-[#003CF3] hover:shadow-[0_4px_12px_rgba(0,60,243,0.3)] active:scale-[0.98] shadow-soft',
+    primary: 'bg-primary text-white hover:bg-primary/90 hover:shadow-[0_4px_12px_rgba(0,102,255,0.3)] active:scale-[0.98] shadow-soft',
+    secondary: 'bg-dark border border-[#27272a] text-foreground hover:border-primary/40 hover:bg-primary/5 active:scale-[0.98]',
     outline: 'border-2 border-black bg-transparent text-black hover:bg-cyan hover:border-cyan hover:text-white active:scale-[0.98]',
     ghost: 'text-grayDark hover:bg-grayLight active:bg-grayMedium',
     destructive: 'bg-red-600 text-white hover:bg-red-700 active:scale-[0.98] shadow-soft'

@@ -69,15 +69,15 @@ export function calculerStatsStock(articles: Article[]): StockStats {
 export function getArticleStatutColor(statut: ArticleStatut): string {
   switch (statut) {
     case 'disponible':
-      return 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'
+      return 'bg-[#00D98E]/10 text-[#00D98E] border-[#00D98E]/20'
     case 'en_vente':
-      return 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
+      return 'bg-[#0066FF]/10 text-[#0066FF] border-[#0066FF]/20'
     case 'vendu':
-      return 'bg-gray-100 text-gray-500 dark:bg-gray-900 dark:text-gray-400'
+      return 'bg-[#E9E9E9]/10 text-[#E9E9E9]/60 border-[#E9E9E9]/10'
     case 'reserve':
-      return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300'
+      return 'bg-[#FF9500]/10 text-[#FF9500] border-[#FF9500]/20'
     default:
-      return 'bg-gray-100 text-gray-500 dark:bg-gray-900 dark:text-gray-400'
+      return 'bg-[#E9E9E9]/10 text-[#E9E9E9]/60 border-[#E9E9E9]/10'
   }
 }
 

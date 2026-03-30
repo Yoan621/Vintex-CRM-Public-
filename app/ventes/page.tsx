@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import OrdersTable from '@/components/dashboard/OrdersTable'
 import StatsCard from '@/components/shared/StatsCard'
 import { getOrders, addOrder, getUniqueAccounts } from '@/lib/store/ordersStore'
@@ -13,26 +13,59 @@ import AddSaleModal, { SaleFormData } from '@/components/ventes/AddSaleModal'
 import Button from '@/components/ui/Button'
 import type { Order } from '@/lib/types'
 
-/**
- * Page Mes Ventes - Liste complète de toutes les ventes
- * Affiche un tableau détaillé avec recherche, tri et pagination
- * 
- * ⚠️ Les données proviennent maintenant du store (ordersStore.ts) au lieu de mockData
- */
 export default function VentesPage() {
-  // États des filtres temporels et compte
   const [timePeriod, setTimePeriod] = useState<TimePeriod>('month')
   const [selectedAccount, setSelectedAccount] = useState<AccountOption>('all')
-
-  // État pour la modale d'ajout
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0)
+  const [dbOrders, setDbOrders] = useState<Order[] | null>(null)
 
-  // Récupérer les commandes depuis le store (au lieu de mockData)
-  const orders = getOrders()
+  // Charger les ventes depuis la DB au montage
+  useEffect(() => {
+    fetch('/api/ventes')
+      .then(r => r.json())
+      .then(data => {
+        if (data.success && data.ventes.length > 0) {
+          const mapped: Order[] = data.ventes.map((v: any) => ({
+            id: v.id,
+            transactionNumber: v.transactionNumber,
+            articleName: v.articleName,
+            brandName: v.brandName || 'Inconnu',
+            vintedAccount: v.vintedAccount,
+            status: v.status as Order['status'],
+            purchaseDate: v.purchaseDate ? new Date(v.purchaseDate) : undefined,
+            saleDate: new Date(v.saleDate),
+            purchasePrice: v.purchasePrice,
+            salePrice: v.salePrice,
+            trackingNumber: v.trackingNumber || undefined,
+            carrier: v.carrier || undefined,
+            customerName: v.customerName,
+            invoice: v.invoice || undefined,
+            shippingLabel: v.shippingLabel || undefined,
+            articleImage: v.articleImage || undefined,
+            cancellationReason: v.cancellationReason || undefined,
+            cancellationDate: v.cancellationDate ? new Date(v.cancellationDate) : undefined,
+            validationDate: v.validationDate ? new Date(v.validationDate) : undefined,
+            shippingDate: v.shippingDate ? new Date(v.shippingDate) : undefined,
+            disputeReason: v.disputeReason || undefined,
+            disputeDate: v.disputeDate ? new Date(v.disputeDate) : undefined,
+            disputeResolved: v.disputeResolved === 1 || v.disputeResolved === true,
+            archived: v.archived === 1 || v.archived === true,
+            archivedDate: v.archivedDate ? new Date(v.archivedDate) : undefined,
+          }))
+          setDbOrders(mapped)
+        }
+      })
+      .catch(() => {/* garde mock data */})
+  }, [refreshKey])
 
-  // Récupérer la liste des comptes Vinted depuis le store
-  const uniqueAccounts = getUniqueAccounts()
+  // Utiliser les données DB si disponibles, sinon fallback mock
+  const orders: Order[] = dbOrders !== null ? dbOrders : (getOrders() as unknown as Order[])
+
+  // Comptes uniques depuis les données actuelles
+  const uniqueAccounts = dbOrders !== null
+    ? Array.from(new Set(dbOrders.map(o => o.vintedAccount).filter(Boolean)))
+    : getUniqueAccounts()
 
   // Filtrer les commandes selon le compte sélectionné
   const filteredOrdersByAccount = selectedAccount === 'all'

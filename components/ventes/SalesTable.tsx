@@ -114,15 +114,15 @@ export default function SalesTable({ orders, onAddClick }: SalesTableProps) {
   const getDashboardStatusColor = (status: Order['status']): string => {
     switch (status) {
       case 'non_traite':
-        return 'bg-[#E9E9E9]/10 text-[#E9E9E9] border border-[#E9E9E9]/20'
+        return 'bg-status-unprocessed/10 text-status-unprocessed border border-status-unprocessed/20'
       case 'validée':
-        return 'bg-[#00D98E]/10 text-[#00D98E] border border-[#00D98E]/20'
+        return 'bg-status-validated/10 text-status-validated border border-status-validated/20'
       case 'en_cours':
-        return 'bg-[#0066FF]/10 text-[#0066FF] border border-[#0066FF]/20'
+        return 'bg-status-pending/10 text-status-pending border border-status-pending/20'
       case 'litige':
-        return 'bg-[#FF9500]/10 text-[#FF9500] border border-[#FF9500]/20'
+        return 'bg-status-dispute/10 text-status-dispute border border-status-dispute/20'
       case 'annulée':
-        return 'bg-[#FF0000]/10 text-[#FF0000] border border-[#FF0000]/20'
+        return 'bg-status-canceled/10 text-status-canceled border border-status-canceled/20'
       default:
         return 'bg-secondary/10 text-secondary border border-secondary/20'
     }
@@ -293,7 +293,7 @@ export default function SalesTable({ orders, onAddClick }: SalesTableProps) {
                       <span className="font-bold text-secondary">{formatCurrency(order.salePrice)}</span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`font-semibold ${isProfit ? 'text-[#00D98E]' : 'text-red-500'}`}>
+                      <span className={`font-semibold ${isProfit ? 'text-success' : 'text-error'}`}>
                         {formatCurrency(profit)}
                       </span>
                     </td>

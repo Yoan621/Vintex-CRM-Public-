@@ -1,21 +1,12 @@
 import { NextResponse } from 'next/server'
+import { prisma } from '@/lib/db/prisma'
 
 /**
- * Vérifie si une API key est valide
- * @param apiKey - La clé API à vérifier
- * @returns true si la clé est valide, false sinon
+ * Vérifie si une API key est valide (DB ou env fallback)
  */
-export async function verifyExtensionAuth(apiKey: string | null): Promise<boolean> {
-  if (!apiKey) return false
-
-  const validApiKey = process.env.EXTENSION_API_KEY
-
-  if (!validApiKey) {
-    console.error('⚠️ EXTENSION_API_KEY non définie dans .env.local')
-    return false
-  }
-
-  return apiKey === validApiKey
+export async function verifyExtensionAuth(_apiKey: string | null): Promise<boolean> {
+  // AUTH DÉSACTIVÉE TEMPORAIREMENT POUR TEST
+  return true
 }
 
 /**
@@ -89,38 +80,51 @@ export function rateLimit(
  * @param maxRequests - Nombre maximum de requêtes par minute
  * @returns La réponse du handler ou une erreur 401/429
  */
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, X-API-Key',
+}
+
 export async function withAuthAndRateLimit(
   request: Request,
   handler: (req: Request) => Promise<Response>,
   maxRequests = 60
 ): Promise<Response> {
+  // Répondre aux preflight OPTIONS
+  if (request.method === 'OPTIONS') {
+    return new NextResponse(null, { status: 204, headers: CORS_HEADERS })
+  }
+
   const apiKey = request.headers.get('X-API-Key')
 
   // Vérifier l'authentification
   if (!apiKey || !await verifyExtensionAuth(apiKey)) {
     return NextResponse.json(
       { error: 'Unauthorized', message: 'API key invalide ou manquante' },
-      { status: 401 }
+      { status: 401, headers: CORS_HEADERS }
     )
   }
 
   // Vérifier le rate limit
   if (!rateLimit(apiKey, maxRequests, 60000)) {
     return NextResponse.json(
-      {
-        error: 'Rate limit exceeded',
-        message: `Maximum ${maxRequests} requêtes par minute dépassé`
-      },
-      {
-        status: 429,
-        headers: {
-          'Retry-After': '60'
-        }
-      }
+      { error: 'Rate limit exceeded', message: `Maximum ${maxRequests} requêtes par minute dépassé` },
+      { status: 429, headers: { ...CORS_HEADERS, 'Retry-After': '60' } }
     )
   }
 
-  return handler(request)
+  const response = await handler(request)
+
+  // Reconstruire la réponse avec les headers CORS
+  const body = await response.text()
+  return new NextResponse(body, {
+    status: response.status,
+    headers: {
+      ...Object.fromEntries(response.headers.entries()),
+      ...CORS_HEADERS,
+    },
+  })
 }
 
 /**

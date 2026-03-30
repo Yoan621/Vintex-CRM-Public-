@@ -26,7 +26,7 @@ export default function SalesChart({ data }: SalesChartProps) {
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-black border border-primary/40 p-4 rounded-lg shadow-lg">
+        <div className="bg-dark border border-primary/40 p-4 rounded-lg shadow-lg">
           <p className="text-sm font-medium text-secondary mb-2">
             {payload[0].payload.date}
           </p>
@@ -34,7 +34,7 @@ export default function SalesChart({ data }: SalesChartProps) {
             <p className="text-sm text-primary">
               CA: {formatCurrency(payload[0].value)}
             </p>
-            <p className="text-sm text-green-500">
+            <p className="text-sm text-success">
               Bénéfice: {formatCurrency(payload[1].value)}
             </p>
           </div>

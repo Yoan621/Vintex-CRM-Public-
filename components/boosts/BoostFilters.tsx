@@ -43,36 +43,36 @@ export default function BoostFilters({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Recherche */}
         <div className="lg:col-span-2">
-          <label className="block text-[13px] font-medium text-white/70 mb-2">
+          <label className="block text-[13px] font-medium text-foreground/50 mb-2">
             Rechercher
           </label>
           <div className="relative">
             <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center">
-              <Search className="w-4 h-4 text-white/60" />
+              <Search className="w-4 h-4 text-foreground/50" />
             </div>
             <input
               type="text"
               placeholder="Rechercher : article, marque, n° commande, client, compte…"
               value={searchTerm}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="w-full h-10 pl-10 pr-10 bg-[#18181b] border border-[#27272a] rounded-[10px] text-[14px] text-white placeholder:text-secondary/40 focus:outline-none focus:border-primary/40 transition-colors"
+              className="w-full h-10 pl-10 pr-10 bg-[#18181b] border border-[#27272a] rounded-[10px] text-[14px] text-foreground placeholder:text-foreground/30 focus:outline-none focus:border-primary/40 transition-colors"
             />
           </div>
         </div>
 
         {/* Statut */}
         <div>
-          <label className="block text-[13px] font-medium text-white/70 mb-2">
+          <label className="block text-[13px] font-medium text-foreground/50 mb-2">
             Statut
           </label>
           <select
             value={statusFilter}
             onChange={(e) => onStatusFilterChange(e.target.value as BoostStatus | 'tous')}
-            className="w-full h-10 px-4 bg-[#18181b] border border-[#27272a] rounded-[10px] text-[14px] text-white focus:outline-none focus:border-[#003CF3]/40 focus:ring-0 transition-colors appearance-none cursor-pointer"
+            className="w-full h-10 px-4 bg-[#18181b] border border-[#27272a] rounded-[10px] text-[14px] text-foreground focus:outline-none focus:border-primary/40 focus:ring-0 transition-colors appearance-none cursor-pointer"
             style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}
           >
             {statusOptions.map((option) => (
-              <option key={option.value} value={option.value} className="bg-[#18181b] text-white">
+              <option key={option.value} value={option.value} className="bg-[#18181b] text-foreground">
                 {option.label}
               </option>
             ))}
@@ -81,17 +81,17 @@ export default function BoostFilters({
 
         {/* Période */}
         <div>
-          <label className="block text-[13px] font-medium text-white/70 mb-2">
+          <label className="block text-[13px] font-medium text-foreground/50 mb-2">
             Période
           </label>
           <select
             value={periodFilter}
             onChange={(e) => onPeriodFilterChange(e.target.value as BoostPeriodFilter)}
-            className="w-full h-10 px-4 bg-[#18181b] border border-[#27272a] rounded-[10px] text-[14px] text-white focus:outline-none focus:border-[#003CF3]/40 focus:ring-0 transition-colors appearance-none cursor-pointer"
+            className="w-full h-10 px-4 bg-[#18181b] border border-[#27272a] rounded-[10px] text-[14px] text-foreground focus:outline-none focus:border-primary/40 focus:ring-0 transition-colors appearance-none cursor-pointer"
             style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}
           >
             {periodOptions.map((option) => (
-              <option key={option.value} value={option.value} className="bg-[#18181b] text-white">
+              <option key={option.value} value={option.value} className="bg-[#18181b] text-foreground">
                 {option.label}
               </option>
             ))}
@@ -106,7 +106,7 @@ export default function BoostFilters({
           {onAddBoost && (
             <button
               onClick={onAddBoost}
-              className="flex items-center gap-3 px-5 py-2.5 bg-gradient-to-r from-[#003CF3] to-[#0052CC] text-white rounded-[10px] font-semibold text-[14px] tracking-tight shadow-[0_4px_16px_rgba(0,60,243,0.4)] hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(0,60,243,0.5)] transition-all duration-250"
+              className="flex items-center gap-3 px-5 py-2.5 bg-primary text-white rounded-[10px] font-semibold text-[14px] tracking-tight shadow-[0_4px_16px_rgba(0,60,243,0.4)] hover:-translate-y-0.5 hover:bg-primary/90 hover:shadow-[0_4px_20px_rgba(0,60,243,0.5)] transition-all duration-250"
             >
               <Plus className="w-4 h-4" />
               Ajouter un boost
@@ -117,9 +117,9 @@ export default function BoostFilters({
           {onExportCSV && (
             <button
               onClick={onExportCSV}
-              className="flex items-center gap-3 px-5 py-2.5 bg-[#1a1f23] border border-[#27272a] rounded-[10px] text-white text-[14px] font-medium tracking-tight hover:border-[#003CF3]/40 hover:bg-[#1f1f23] transition-all duration-250"
+              className="flex items-center gap-3 px-5 py-2.5 bg-background border border-[#27272a] rounded-[10px] text-foreground text-[14px] font-medium tracking-tight hover:border-primary/40 hover:bg-dark transition-all duration-250"
             >
-              <div className="p-1.5 rounded-full bg-[#003CF3] shadow-[0_4px_16px_rgba(0,60,243,0.4)] flex items-center justify-center">
+              <div className="p-1.5 rounded-full bg-primary shadow-[0_4px_16px_rgba(0,60,243,0.4)] flex items-center justify-center">
                 <Download className="w-3.5 h-3.5 text-white" />
               </div>
               Exporter en CSV

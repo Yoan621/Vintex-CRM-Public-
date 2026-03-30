@@ -170,15 +170,15 @@ export function generateKPIs(stats: MonthlyStats): KPI[] {
 export function getStatusColor(status: Order['status']): string {
   switch (status) {
     case 'non_traite':
-      return 'bg-gray-500/10 text-gray-500 border border-gray-500/20'
+      return 'bg-status-unprocessed/10 text-status-unprocessed border border-status-unprocessed/20'
     case 'validée':
-      return 'bg-green-500/10 text-green-500 border border-green-500/20'
+      return 'bg-status-validated/10 text-status-validated border border-status-validated/20'
     case 'en_cours':
-      return 'bg-primary/10 text-primary border border-primary/20'
+      return 'bg-status-pending/10 text-status-pending border border-status-pending/20'
     case 'litige':
-      return 'bg-orange-500/10 text-orange-500 border border-orange-500/20'
+      return 'bg-status-dispute/10 text-status-dispute border border-status-dispute/20'
     case 'annulée':
-      return 'bg-red-500/10 text-red-500 border border-red-500/20'
+      return 'bg-status-canceled/10 text-status-canceled border border-status-canceled/20'
     default:
       return 'bg-secondary/10 text-secondary border border-secondary/20'
   }
@@ -231,13 +231,13 @@ export function getCarrierLabel(carrier?: string): string {
 export function getBoostStatusColor(status: BoostStatus): string {
   switch (status) {
     case 'actif':
-      return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+      return 'bg-success/10 text-success border border-success/20'
     case 'expiré':
-      return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300'
+      return 'bg-secondary/10 text-secondary/50 border border-secondary/10'
     case 'annulé':
-      return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+      return 'bg-error/10 text-error border border-error/20'
     default:
-      return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300'
+      return 'bg-secondary/10 text-secondary/50 border border-secondary/10'
   }
 }
 

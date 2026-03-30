@@ -1,0 +1,51 @@
+# Fichiers de configuration locale
+config.json
+.env
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dépendances Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# Icônes générées (peuvent être regénérées)
+# Décommentez si vous voulez les versionner
+# icons/*.png
+
+# Fichiers macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Fichiers Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Fichiers de build/distribution
+dist/
+build/
+*.crx
+*.pem
+*.zip
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Fichiers temporaires
+*.tmp
+*.temp

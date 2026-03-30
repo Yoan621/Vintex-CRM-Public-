@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { mockAchats, filterAchatsByPeriod, calculateStats } from '@/lib/mock-data/achats'
 import { getComptesUsernames } from '@/lib/mock-data/comptes-vinted'
 import { addMultipleArticlesFromAchats } from '@/lib/mock-data/stock'
@@ -28,6 +28,40 @@ export default function AchatsPage() {
   // États des filtres temporels et compte
   const [timePeriod, setTimePeriod] = useState<TimePeriod>('month')
   const [selectedAccount, setSelectedAccount] = useState<AccountOption>('all')
+
+  // Charger les achats depuis la DB au montage
+  useEffect(() => {
+    fetch('/api/achats')
+      .then(r => r.json())
+      .then(data => {
+        if (data.success && data.achats.length > 0) {
+          const mapped: Achat[] = data.achats.map((a: any) => ({
+            id: a.id,
+            numeroTransaction: a.numeroTransaction,
+            nomArticle: a.nomArticle,
+            marque: a.marque || 'Inconnu',
+            taille: a.taille || 'Unique',
+            prixAchat: a.prixAchat,
+            fraisPort: a.fraisPort,
+            coutTotal: a.coutTotal,
+            dateAchat: a.dateAchat ? new Date(a.dateAchat).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+            plateforme: (a.plateforme || 'vinted') as Achat['plateforme'],
+            vendeur: a.vendeur || undefined,
+            compteVinted: a.compteVinted || undefined,
+            statut: (a.statut || 'en_attente') as Achat['statut'],
+            numeroSuivi: a.numeroSuivi || undefined,
+            prixReventePrevu: a.prixReventePrevu || undefined,
+            margeEstimee: a.margeEstimee || 0,
+            notes: a.notes || undefined,
+            photo: a.photo || undefined,
+            createdAt: a.createdAt,
+            updatedAt: a.updatedAt,
+          }))
+          setAchats(mapped)
+        }
+      })
+      .catch(() => {/* garde mock data */})
+  }, [])
 
   // États des filtres
   const [searchQuery, setSearchQuery] = useState('')

@@ -1,0 +1,39 @@
+{
+  "metadata": {
+    "totalOrders": 3,
+    "scannedAt": "2025-12-25T20:48:00.000Z",
+    "source": "vinted"
+  },
+  "orders": [
+    {
+      "orderId": "19861078867",
+      "title": "Bottes grise à bout carré sangles multiples grey Multi-Buckle Boots",
+      "price": "40,50 €",
+      "status": "Bordereau envoyé au vendeur",
+      "conversationUrl": "https://www.vinted.fr/inbox/19861078867",
+      "shippingLabelUrl": "https://svc-shipping-labels.s3.eu-central-1.amazonaws.com/1qefnfk6g4ur4ncfcdv2pp72ksyn?response-content-disposition=inline%3B%20filename%3D%225639a1be-792e-48a6-8ed1-4c89479e503d.pdf%22%3B%20filename%2A%3DUTF-8%27%275639a1be-792e-48a6-8ed1-4c89479e503d.pdf&response-content-type=application%2Fpdf&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIEGN6TTMTCHZ353Q%2F20251225%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Date=20251225T204800Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=d775f99dbf0e6319997d602917bd033ea1f64fedc6e259f5dabd0cdfaffc372d",
+      "fetchedAt": "2025-12-25T20:48:00.000Z",
+      "source": "vinted"
+    },
+    {
+      "orderId": "19823456789",
+      "title": "Robe d'été fleurie taille M",
+      "price": "15,00 €",
+      "status": "Expédié",
+      "conversationUrl": "https://www.vinted.fr/inbox/19823456789",
+      "shippingLabelUrl": "https://svc-shipping-labels.s3.eu-central-1.amazonaws.com/abc123def456...",
+      "fetchedAt": "2025-12-25T20:48:05.000Z",
+      "source": "vinted"
+    },
+    {
+      "orderId": "19834567890",
+      "title": "Pull en laine beige oversize",
+      "price": "28,90 €",
+      "status": "En attente d'expédition",
+      "conversationUrl": "https://www.vinted.fr/inbox/19834567890",
+      "shippingLabelUrl": null,
+      "fetchedAt": "2025-12-25T20:48:10.000Z",
+      "source": "vinted"
+    }
+  ]
+}

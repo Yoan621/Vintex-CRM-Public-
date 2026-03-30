@@ -238,6 +238,8 @@ model ExtensionConfig {
 
   // Identifiant unique de l'utilisateur/extension
   apiKey            String   @unique
+  vintedAccount     String   @default("")
+  isActive          Boolean  @default(true)
 
   // Configuration sync
   syncInterval      Int      @default(15) // minutes
@@ -260,4 +262,5 @@ model ExtensionConfig {
   updatedAt         DateTime @updatedAt
 
   @@index([apiKey])
+  @@index([vintedAccount])
 }
