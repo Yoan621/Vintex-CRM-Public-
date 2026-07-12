@@ -28,7 +28,7 @@ export default function AddToStockModal({
 
   // Filtrer uniquement les achats "reçus" ou "en attente" qui ne sont pas encore en stock
   const achatsDisponibles = achats.filter(
-    achat => (achat.statut === 'recu' || achat.statut === 'en_attente' || achat.statut === 'expedie') && achat.statut !== 'en_stock'
+    achat => achat.statut === 'recu' || achat.statut === 'en_attente' || achat.statut === 'expedie'
   )
 
   const handleToggle = (achatId: string) => {
